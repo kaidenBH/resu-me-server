@@ -1,30 +1,47 @@
 const Personal = require('../../models/resumeFields/personal');
+const Resume = require('../../models/resume');
 
-const create_personalSection = async (resumeId, user, res) => {
+const create_personalSection = async (resumeId, user) => {
     try {
         const { first_name, last_name, email } = user;
-        
-        const personal_section = await Personal.create({ resumeId, first_name, last_name, email });
+    
+        const summary = ["Professional Summary", ""];
 
-        return {personal_section};
+        const personal_section = await Personal.create({ resumeId, first_name, last_name, email, summary });
+
+        return { personal_section };
 
     } catch (error) {
-        return res.status(500).json({ message: 'Something went wrong in creating personal data'});
+        throw new Error('Something went wrong in creating personal data');
     }
 }
 
-const update_personalSection = async (resumeId, req, res) => {
+const update_personalSection = async (req, res) => {
     try {
+        const { resumeId } = req.params;
+        const { field_name, job_title, image, first_name, last_name, email, phone, country, city, summary } = req.body;
+
         if (!req.user) {
             return res.status(400).json({ message: 'login to make this action'});
         }
-        const { job_title, image, first_name, last_name, email, phone, country, city, summary } = req.body;
+        const user = req.user;
+         
         const existingSection = await Personal.findOne({ resumeId });
         if (!existingSection) {
-            existingSection = await create_personalSection(resumeId, { first_name, last_name, email, }, res);
+            existingSection = await create_personalSection(resumeId, req.user);
         }
+
+        const existingResume = await Resume.findOne({ _id: resumeId });
+        if (!existingResume) {
+            return res.status(404).json({ message: 'resume do not exists'});
+        }
+        if(user._id.toString() !== existingResume.ownerId.toString()){ 
+            return res.status(403).json({ message: 'Invalid request'});
+        }
+
         const updateFields = {};
 
+        if (field_name) updateFields.field_name = field_name;
         if (job_title)  updateFields.job_title = job_title;
         if (image)      updateFields.image = image;
         if (first_name) updateFields.first_name = first_name;
@@ -33,7 +50,12 @@ const update_personalSection = async (resumeId, req, res) => {
         if (phone)      updateFields.phone = phone;
         if (country)    updateFields.country = country;
         if (city)       updateFields.city = city;
-        
+
+        if (Array.isArray(summary)) {
+            if (summary[0] && summary[0] !== null) updateFields['summary.0'] = summary[0];
+            if (summary[1] && summary[1] !== null) updateFields['summary.1'] = summary[1];
+        }
+
         const updatedPersonSection = await Personal.findByIdAndUpdate(existingSection._id, updateFields, { new: true });
 
         return res.status(200).json({ personal_section: updatedPersonSection });

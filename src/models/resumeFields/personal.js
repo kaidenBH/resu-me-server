@@ -1,7 +1,8 @@
 const mongoose = require( "mongoose");
 
-const userSchema = mongoose.Schema({
-    resumeId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Resume' },
+const personalSchema = mongoose.Schema({
+    resumeId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true },
+    field_name:   { type: String, default: "Personal Details" },
     job_title:  { type: String, default: "" },
     image:      { type: String, default: "" },
     first_name: { type: String, required: true },
@@ -10,8 +11,11 @@ const userSchema = mongoose.Schema({
     phone:      { type: String, default: "" },
     country:    { type: String, default: "" },
     city:       { type: String, default: "" },
-    summary:    { type: String, default: "" },
+    summary: [
+        { type: String, default: "Professional Summary" },
+        { type: String, default: "" }
+    ],
    }
 );
 
-module.exports = mongoose.model('Personal', userSchema);
+module.exports = mongoose.model('Personal', personalSchema);

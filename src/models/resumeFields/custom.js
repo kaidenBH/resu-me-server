@@ -1,7 +1,7 @@
 const mongoose = require( "mongoose");
 
-const userSchema = mongoose.Schema({
-    resumeId:       { type: mongoose.Schema.Types.ObjectId, ref: 'Resume' },
+const customSchema = mongoose.Schema({
+    resumeId:       { type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true },
     field_name:     { type: String, default: "Untitled" },
     activity_title: { type: String, default: ""  },
     start_date:     { type: String, default: ""  },
@@ -11,4 +11,4 @@ const userSchema = mongoose.Schema({
   }
 );
 
-module.exports = mongoose.model('Custom', userSchema);
+module.exports = mongoose.model('Custom', customSchema);

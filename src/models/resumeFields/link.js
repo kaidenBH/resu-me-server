@@ -1,11 +1,11 @@
 const mongoose = require( "mongoose");
 
-const userSchema = mongoose.Schema({
-    resumeId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Resume' },
+const linkSchema = mongoose.Schema({
+    resumeId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true },
     field_name:   { type: String, default: "Websites & Links" },
     webite_name:  { type: String, default: ""  },
     url:          { type: String, default: ""  },
   }
 );
 
-module.exports = mongoose.model('Link', userSchema);
+module.exports = mongoose.model('Link', linkSchema);

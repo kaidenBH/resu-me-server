@@ -1,10 +1,10 @@
 const mongoose = require( "mongoose");
 
-const userSchema = mongoose.Schema({
+const resumeSchema = mongoose.Schema({
     ownerId:    { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     title:      { type: String, required: true },
     template:   { type: String, default: "simple" },
-    fields:     [{ type: Object }],
+    fields:     { type: Object, default: {} },
   },
   {
     timestamps: {
@@ -13,4 +13,4 @@ const userSchema = mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Resume', userSchema);
+module.exports = mongoose.model('Resume', resumeSchema);

@@ -1,7 +1,7 @@
 const mongoose = require( "mongoose");
 
-const userSchema = mongoose.Schema({
-    resumeId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Resume' },
+const internshipSchema = mongoose.Schema({
+    resumeId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Resume', required: true },
     field_name:   { type: String, default: "Employment History" },
     job_title:    { type: String, default: ""  },
     emplyer_name: { type: String, default: ""  },
@@ -12,4 +12,4 @@ const userSchema = mongoose.Schema({
   }
 );
 
-module.exports = mongoose.model('InternShip', userSchema);
+module.exports = mongoose.model('InternShip', internshipSchema);
