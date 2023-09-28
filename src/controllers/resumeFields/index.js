@@ -3,7 +3,7 @@ const employment = require('./employment');
 const education = require('./education');
 
 module.exports = {
-    personal,
-    employment,
-    education,
-}
+	personal,
+	employment,
+	education,
+};

@@ -1,224 +1,302 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const transporter = require('../middleware/emailTransporter');
-const { validateEmail, validatePassword, validatePhoneNumber } = require('../middleware/validation');
+const {
+	validateEmail,
+	validatePassword,
+	validatePhoneNumber,
+} = require('../middleware/validation');
 const dotenv = require('dotenv');
 dotenv.config();
 
-
 const signup = async (req, res) => {
-    try {
-        const { email, password: pass, confirmPassword, first_name, last_name } = req.body;
-        
-        if (!email || !pass || !first_name || !last_name) {
-            return res.status(400).json({ message: 'Fill the required fields.'});
-        }
+	try {
+		const {
+			email,
+			password: pass,
+			confirmPassword,
+			first_name,
+			last_name,
+		} = req.body;
 
-        if (!validateEmail(email) || !validatePassword(pass)) {
-            return res.status(400).json({ message: 'invalid credentials.'});
-        }
-        
-        const existingUser = await User.findOne({ email });
-        
-        if(existingUser) {
-            return res.status(406).json({ message: 'User already exists.'});
-        }
+		if (!email || !pass || !first_name || !last_name) {
+			return res
+				.status(400)
+				.json({ message: 'Fill the required fields.' });
+		}
 
-        if(pass !== confirmPassword ) {
-            return res.status(401).json({ message: 'Passowrds Incorerct. '});
-        }
+		if (!validateEmail(email) || !validatePassword(pass)) {
+			return res.status(400).json({ message: 'invalid credentials.' });
+		}
 
-        const hashPassowrd = await bcrypt.hash(pass, 12);
+		const existingUser = await User.findOne({ email });
 
-        const result = await User.create({first_name, last_name, email, password: hashPassowrd });
+		if (existingUser) {
+			return res.status(406).json({ message: 'User already exists.' });
+		}
 
-        const token = jwt.sign({ email: result.email, id: result._id, account_type: result.account_type }, process.env.SECRET_TOKEN, { expiresIn: "7d"});
-        const {_id, verificationToken, password, ...infos} = result.toObject();
-        return res.status(200).json({ infos, token });
-    } catch (error) {
-        return res.status(500).json({ message: 'Something went wrong in server'});
-    }
-}
+		if (pass !== confirmPassword) {
+			return res.status(401).json({ message: 'Passowrds Incorerct. ' });
+		}
+
+		const hashPassowrd = await bcrypt.hash(pass, 12);
+
+		const result = await User.create({
+			first_name,
+			last_name,
+			email,
+			password: hashPassowrd,
+		});
+
+		const token = jwt.sign(
+			{
+				email: result.email,
+				id: result._id,
+				account_type: result.account_type,
+			},
+			process.env.SECRET_TOKEN,
+			{ expiresIn: '7d' },
+		);
+		const { _id, verificationToken, password, ...infos } =
+			result.toObject();
+		return res.status(200).json({ infos, token });
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ message: 'Something went wrong in server' });
+	}
+};
 
 const signin = async (req, res) => {
-    try {
-        const { email, password: pass } = req.body;
-    
-        if (!email || !pass) {
-            return res.status(400).json({ message: 'Fill the required fields.'});
-        }
-        const existingUser = await User.findOne({ email });
+	try {
+		const { email, password: pass } = req.body;
 
-        if(!existingUser) {
-            return res.status(404).json({ message: 'User does not exists.'});
-        }
-        
-        const isPassowrdCorrect = await bcrypt.compare(pass, existingUser.password);
+		if (!email || !pass) {
+			return res
+				.status(400)
+				.json({ message: 'Fill the required fields.' });
+		}
+		const existingUser = await User.findOne({ email });
 
-        if(!isPassowrdCorrect) {
-            return res.status(401).json({ message: 'Password Incorerct.'});
-        }
-        
-        const token = jwt.sign({ email: existingUser.email, id: existingUser._id, account_type: existingUser.account_type }, process.env.SECRET_TOKEN, { expiresIn: "7d"});
-        const {_id, verificationToken, password, ...infos} = existingUser.toObject();
-        
-        return res.status(200).json({ infos, token });
-    } catch (error) {
-        return res.status(500).json({ message: 'Something went wrong in server'});
-    }
-}
+		if (!existingUser) {
+			return res.status(404).json({ message: 'User does not exists.' });
+		}
 
+		const isPassowrdCorrect = await bcrypt.compare(
+			pass,
+			existingUser.password,
+		);
+
+		if (!isPassowrdCorrect) {
+			return res.status(401).json({ message: 'Password Incorerct.' });
+		}
+
+		const token = jwt.sign(
+			{
+				email: existingUser.email,
+				id: existingUser._id,
+				account_type: existingUser.account_type,
+			},
+			process.env.SECRET_TOKEN,
+			{ expiresIn: '7d' },
+		);
+		const { _id, verificationToken, password, ...infos } =
+			existingUser.toObject();
+
+		return res.status(200).json({ infos, token });
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ message: 'Something went wrong in server' });
+	}
+};
 
 const updateuser = async (req, res) => {
-    try {
-        if (!req.user) {
-            return res.status(403).json({ message: 'Invalid request'});
-        }
-        const userId = req.user.id;
-    
-        if(!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(404).send('Invalid User');
-        }
+	try {
+		if (!req.user) {
+			return res.status(403).json({ message: 'Invalid request' });
+		}
+		const userId = req.user.id;
 
-        const existingUser = await User.findOne({ _id: userId });
-        if(!existingUser) {
-            return res.status(404).json({ message: 'user do not exists.'});
-        }
+		if (!mongoose.Types.ObjectId.isValid(userId)) {
+			return res.status(404).send('Invalid User');
+		}
 
-        const { email, oldPassword, newPassword, confirmsNewPassword, first_name, last_name, image } = req.body;
+		const existingUser = await User.findOne({ _id: userId });
+		if (!existingUser) {
+			return res.status(404).json({ message: 'user do not exists.' });
+		}
 
-        if (!oldPassword) {
-            return res.status(400).json({ message: 'invalid credentials.'});
-        }
-        
-        const isPassowrdCorrect = await bcrypt.compare(oldPassword, existingUser.password);
+		const {
+			email,
+			oldPassword,
+			newPassword,
+			confirmsNewPassword,
+			first_name,
+			last_name,
+			image,
+		} = req.body;
 
-        if (!isPassowrdCorrect) {
-            return res.status(400).json({ message: 'Invalid credentials.' });
-        }
+		if (!oldPassword) {
+			return res.status(400).json({ message: 'invalid credentials.' });
+		}
 
+		const isPassowrdCorrect = await bcrypt.compare(
+			oldPassword,
+			existingUser.password,
+		);
 
-        const updateFields = {};
+		if (!isPassowrdCorrect) {
+			return res.status(400).json({ message: 'Invalid credentials.' });
+		}
 
-        if (email) {
-            if (!validateEmail(email)) {
-                return res.status(400).json({ message: 'invalid new email.'});
-            }
-            const existEmail = await User.findOne({ email });
-            const oldEmail = existingUser.email;
-            if (existEmail && email !== oldEmail) {
-                return res.status(406).json({ message: 'Email already exists.' });
-            }
-            updateFields.email = email;
-        }
+		const updateFields = {};
 
-        if (newPassword) {
-            if (!validatePassword(newPassword)) {
-                return res.status(400).json({ message: 'invalid new Password.'});
-            }
-            if(!confirmsNewPassword || newPassword !== confirmsNewPassword){
-                return res.status(400).json({ message: 'Invalid credentials.' });
-            }
-            updateFields.password = await bcrypt.hash(newPassword, 12);
-        }
+		if (email) {
+			if (!validateEmail(email)) {
+				return res.status(400).json({ message: 'invalid new email.' });
+			}
+			const existEmail = await User.findOne({ email });
+			const oldEmail = existingUser.email;
+			if (existEmail && email !== oldEmail) {
+				return res
+					.status(406)
+					.json({ message: 'Email already exists.' });
+			}
+			updateFields.email = email;
+		}
 
-        if (first_name)   updateFields.first_name = first_name;
-        if (last_name)    updateFields.last_name = last_name;
-        if (image)        updateFields.image = image;
+		if (newPassword) {
+			if (!validatePassword(newPassword)) {
+				return res
+					.status(400)
+					.json({ message: 'invalid new Password.' });
+			}
+			if (!confirmsNewPassword || newPassword !== confirmsNewPassword) {
+				return res
+					.status(400)
+					.json({ message: 'Invalid credentials.' });
+			}
+			updateFields.password = await bcrypt.hash(newPassword, 12);
+		}
 
-        const updatedUser = await User.findByIdAndUpdate( userId, updateFields, { new: true });
+		if (first_name) updateFields.first_name = first_name;
+		if (last_name) updateFields.last_name = last_name;
+		if (image) updateFields.image = image;
 
-        const {_id, verificationToken, password, ...infos} = updatedUser.toObject();
-        const token = jwt.sign({ email: updatedUser.email, id: updatedUser._id, account_type: updatedUser.account_type }, process.env.SECRET_TOKEN, { expiresIn: "7d"});
+		const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+			new: true,
+		});
 
-        return res.status(200).json({ infos, token });
-        
-    } catch (error) {
-        return res.status(500).json({ message: 'something went wrong in server'});
-    }
-}
+		const { _id, verificationToken, password, ...infos } =
+			updatedUser.toObject();
+		const token = jwt.sign(
+			{
+				email: updatedUser.email,
+				id: updatedUser._id,
+				account_type: updatedUser.account_type,
+			},
+			process.env.SECRET_TOKEN,
+			{ expiresIn: '7d' },
+		);
+
+		return res.status(200).json({ infos, token });
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ message: 'something went wrong in server' });
+	}
+};
 
 const refreshToken = async (req, res) => {
-    try {
-        if (!req.user) {
-            return res.status(403).json({ message: 'Invalid request'});
-        }
-        const userId = req.user.id;
-    
-        const existinguser = await User.findById(userId);
-    
-        if (!existinguser) {
-            return res.status(401).json({ message: 'User not found.' });
-        }
-    
-        const token = jwt.sign({ email: existinguser.email, id: existinguser._id, account_type: existinguser.account_type }, process.env.SECRET_TOKEN, { expiresIn: "7d"});
-        const {_id, verificationToken, password, ...infos} = existinguser.toObject();
-        return res.status(200).json({ infos, token });
-    } catch (error) {
-        return res.status(403).json({ message: 'Invalid refresh token.' });
-    }
-}
+	try {
+		if (!req.user) {
+			return res.status(403).json({ message: 'Invalid request' });
+		}
+		const userId = req.user.id;
+
+		const existinguser = await User.findById(userId);
+
+		if (!existinguser) {
+			return res.status(401).json({ message: 'User not found.' });
+		}
+
+		const token = jwt.sign(
+			{
+				email: existinguser.email,
+				id: existinguser._id,
+				account_type: existinguser.account_type,
+			},
+			process.env.SECRET_TOKEN,
+			{ expiresIn: '7d' },
+		);
+		const { _id, verificationToken, password, ...infos } =
+			existinguser.toObject();
+		return res.status(200).json({ infos, token });
+	} catch (error) {
+		return res.status(403).json({ message: 'Invalid refresh token.' });
+	}
+};
 
 const sendVerificationEmail = async (req, res) => {
-    try {
-        if (!req.user) {
-            return res.status(403).json({ message: 'Invalid request'});
-        }
-        const email = req.user.email;
-        const existingUser = await User.findOne({ email });
+	try {
+		if (!req.user) {
+			return res.status(403).json({ message: 'Invalid request' });
+		}
+		const email = req.user.email;
+		const existingUser = await User.findOne({ email });
 
-        if(!existingUser) {
-            return res.status(404).json({ message: 'User does not exists.'});
-        }
-        const verificationToken = crypto.randomBytes(20).toString('hex');
+		if (!existingUser) {
+			return res.status(404).json({ message: 'User does not exists.' });
+		}
+		const verificationToken = crypto.randomBytes(20).toString('hex');
 
-        existingUser.verificationToken = verificationToken;
-        await existingUser.save();
-        
-        const verificationLink = `http://${req.hostname}/user/verify/${verificationToken}`;
+		existingUser.verificationToken = verificationToken;
+		await existingUser.save();
 
-        const mailDetails = {
-            from: process.env.EMAIL,
-            to: email,
-            subject: 'Email Verification',
-            text: `Hello, thanks for registration . Please click on the following link to verify your email: ${verificationLink}`,
-        };
-    
-        await transporter.sendMail(mailDetails);
-        return res.json({ message: 'Email verification sent successfully' });
-    } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-}
+		const verificationLink = `http://${req.hostname}/user/verify/${verificationToken}`;
+
+		const mailDetails = {
+			from: process.env.EMAIL,
+			to: email,
+			subject: 'Email Verification',
+			text: `Hello, thanks for registration . Please click on the following link to verify your email: ${verificationLink}`,
+		};
+
+		await transporter.sendMail(mailDetails);
+		return res.json({ message: 'Email verification sent successfully' });
+	} catch (error) {
+		return res.status(500).json({ error: 'Internal server error' });
+	}
+};
 
 const verifyEmail = async (req, res) => {
-    try {
-        const { token } = req.params;
-        const user = await User.findOne({ verificationToken: token });
-    
-        if (!user) {
-            return res.status(404).json({ error: 'Token not found' });
-        }
-    
-        user.isVerified = true;
-        user.verificationToken = null;
-        await user.save();
-    
-        return res.json({ message: 'Email verified successfully' });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
+	try {
+		const { token } = req.params;
+		const user = await User.findOne({ verificationToken: token });
+
+		if (!user) {
+			return res.status(404).json({ error: 'Token not found' });
+		}
+
+		user.isVerified = true;
+		user.verificationToken = null;
+		await user.save();
+
+		return res.json({ message: 'Email verified successfully' });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: 'Internal server error' });
+	}
 };
 module.exports = {
-    signup,
-    signin,
-    updateuser,
-    refreshToken,
-    sendVerificationEmail,
-    verifyEmail,
+	signup,
+	signin,
+	updateuser,
+	refreshToken,
+	sendVerificationEmail,
+	verifyEmail,
 };
-  
