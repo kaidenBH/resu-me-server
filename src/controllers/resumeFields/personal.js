@@ -9,7 +9,7 @@ const create_personalSection = async (resumeId, user) => {
 
         const personal_section = await Personal.create({ resumeId, first_name, last_name, email, summary });
 
-        return { personal_section };
+        return personal_section;
 
     } catch (error) {
         throw new Error('Something went wrong in creating personal data');
@@ -25,10 +25,20 @@ const update_personalSection = async (req, res) => {
             return res.status(400).json({ message: 'login to make this action'});
         }
         const user = req.user;
-         
+
         const existingSection = await Personal.findOne({ resumeId });
         if (!existingSection) {
-            existingSection = await create_personalSection(resumeId, req.user);
+            existingSection = await Personal.create({ 
+                resumeId: resumeId || "", 
+                field_name: field_name || "",
+                job_title: job_title || "",
+                image: image || "",
+                first_name: first_name || user.first_name, 
+                last_name: last_name || user.last_name, 
+                email: email || user.email, 
+                summary: summary || "" 
+            });
+            return res.status(200).json({ personal_section: existingSection });
         }
 
         const existingResume = await Resume.findOne({ _id: resumeId });

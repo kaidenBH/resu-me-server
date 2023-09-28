@@ -12,13 +12,17 @@ const create_employmentRecord = async (resumeId) => {
           city: "",
           description: ""
       };
+      let employment_section = await Employment.findOne({ resumeId });
+      if (employment_section) {
+        throw new Error('employment History already exists');
+      }
 
-      const employment_section = await Employment.create({
+      employment_section = await Employment.create({
           resumeId,
           employments: [defaultEmployment]
       });
 
-      return { employment_section };
+      return employment_section;
 
     } catch (error) {
         console.log(error);
@@ -38,6 +42,11 @@ const add_employmentRecord = async (req, res) => {
           city: "",
           description: ""
       };
+      
+      if (!req.user) {
+        return res.status(400).json({ message: 'login to make this action'});
+      }
+      const user = req.user;
 
       const existingResume = await Resume.findOne({ _id: resumeId });
       if (!existingResume) {
@@ -46,20 +55,19 @@ const add_employmentRecord = async (req, res) => {
       if(user._id.toString() !== existingResume.ownerId.toString()){ 
           return res.status(403).json({ message: 'Invalid request'});
       }
-
-      const employment_record = await Employment.findOneAndUpdate(
-          { resumeId },
-          { $push: { employments: defaultEmployment }},
-          { new: true }
-      );
-
-      if (!employment_record) {
-          return res.status(400).json({ message: 'Employment record not found' });
+      
+      let employment_section = await Employment.findOne({ resumeId });
+      if (!employment_section) {
+        employment_section = await create_employmentRecord(resumeId);
+      } else {
+        employment_section.employments.push(defaultEmployment);
+        employment_section = await employment_section.save();
       }
 
-      return res.status(200).json({ employment_record });
+      return res.status(200).json({ employment_section });
 
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ message: 'something went wrong in adding employment record'});
     }
 }
@@ -74,9 +82,21 @@ const update_employmentRecord = async (req, res) => {
         }
         const user = req.user;
 
-        const existingRecord = await Employment.findOne({ resumeId });
-        if (!existingRecord) {
-            existingSection = await create_employmentRecord(resumeId);
+        const employment_section = await Employment.findOne({ resumeId });
+        if (!employment_section) {
+          employment_section = await Employment.create({
+            resumeId,
+            field_name: field_name || "Employment History",
+            employments: [{
+              job_title: job_title || "", 
+              employer_name: employer_name || "", 
+              start_date: start_date || "", 
+              end_date: end_date || "", 
+              city: city || "", 
+              description: description || "" 
+            }]
+          });
+          return res.status(200).json({ employment_section });
         }
 
         const existingResume = await Resume.findOne({ _id: resumeId });
@@ -87,8 +107,8 @@ const update_employmentRecord = async (req, res) => {
             return res.status(403).json({ message: 'Invalid request'});
         }
 
-        if (field_name) existingRecord.field_name = field_name;
-        await existingRecord.save();
+        if (field_name) employment_section.field_name = field_name;
+        await employment_section.save();
         
         const updateFields = {};
         
@@ -105,7 +125,7 @@ const update_employmentRecord = async (req, res) => {
             { new: true, arrayFilters: [{ "elem._id": employmentId }] }
         );
 
-        return res.status(200).json({ employment_record: updatedEmploymentRecord });
+        return res.status(200).json({ employment_section: updatedEmploymentRecord });
         
     } catch (error) {
         return res.status(500).json({ message: 'something went wrong in updating employment record'});
@@ -137,7 +157,7 @@ const delete_employmentRecord = async (req, res) => {
         existingRecord.employments.pull({ _id: employmentId });
         await existingRecord.save();
 
-        return res.status(200).json({ message: 'deleted employment record successfully' });
+        return res.status(200).json({ employment_section: existingRecord });
         
     } catch (error) {
         console.log(error);
@@ -183,9 +203,9 @@ const delete_employment = async (req, res) => {
 
 module.exports = {
     create_employmentRecord,
+    add_employmentRecord,
     update_employmentRecord,
     delete_employmentRecord,
-    add_employmentRecord,
     delete_employment,
 };
   
