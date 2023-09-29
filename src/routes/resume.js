@@ -99,6 +99,58 @@ router.delete(
 	resumeController.resumeFields.links.delete_LinkSection,
 );
 
+// skill section 
+router.patch(
+	'/addSkill/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.skills.add_skill,
+);
+router.patch(
+	'/updateSkill/:resumeId/:skillId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.skills.update_skill,
+);
+router.delete(
+	'/deleteSkill/:resumeId/:skillId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.skills.delete_skill,
+);
+router.delete(
+	'/deleteSkillSection/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.skills.delete_skillSection,
+);
+
+// language section 
+router.patch(
+	'/addLanguage/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.languages.add_language,
+);
+router.patch(
+	'/updateLanguage/:resumeId/:languageId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.languages.update_language,
+);
+router.delete(
+	'/deleteLanguage/:resumeId/:languageId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.languages.delete_language,
+);
+router.delete(
+	'/deleteLanguageSection/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.languages.delete_languageSection,
+);
+
 
 
 module.exports = router;

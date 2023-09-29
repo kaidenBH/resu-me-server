@@ -74,8 +74,6 @@ const update_employmentRecord = async (req, res) => {
 			description,
 		} = req.body;
 
-		const user = req.user;
-
 		const employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
 			employment_section = await Employment.create({
@@ -133,8 +131,6 @@ const delete_employmentRecord = async (req, res) => {
 	try {
 		const { resumeId, employmentId } = req.params;
 
-		const user = req.user;
-
 		const existingRecord = await Employment.findOne({ resumeId });
 		if (!existingRecord) {
 			return res
@@ -159,8 +155,6 @@ const delete_employmentRecord = async (req, res) => {
 const delete_employment = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
-		const user = req.user;
 		const resume = req.resume;
 
 		const existingRecord = await Employment.findOne({ resumeId });

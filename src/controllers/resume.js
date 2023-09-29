@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const User = require('../models/user');
 const Resume = require('../models/resume');
 const resumeFields = require('./resumeFields');
 
@@ -28,17 +27,27 @@ const newResume = async (req, res) => {
 			await resumeFields.employment.create_employment(
 				newResume._id,
 			);
-		const education_section = await resumeFields.education.create_education(
-			newResume._id,
-		);
+		const education_section = 
+			await resumeFields.education.create_education(
+				newResume._id,
+			);
 		const link_section = await resumeFields.links.create_links(
 			newResume._id,
 		);
+		const skill_section = await resumeFields.skills.create_skills(
+			newResume._id,
+		);
+		const language_section = 
+			await resumeFields.languages.create_languages(
+				newResume._id,
+			);
 
 		newResume.fields.personal_section = personal_section;
+		newResume.fields.link_section = link_section;
 		newResume.fields.employment_section = employment_section;
 		newResume.fields.education_section = education_section;
-		newResume.fields.link_section = link_section;
+		newResume.fields.skill_section = skill_section;
+		newResume.fields.language_section = language_section;
 		await newResume.save();
 
 		return res.status(200).json({ newResume });

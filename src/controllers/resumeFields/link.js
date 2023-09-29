@@ -59,8 +59,6 @@ const update_link = async (req, res) => {
 			url,
 		} = req.body;
 
-		const user = req.user;
-
 		let link_section = await Link.findOne({ resumeId });
 		if (!link_section) {
 			link_section = await Link.create({
@@ -106,8 +104,6 @@ const delete_link = async (req, res) => {
 	try {
 		const { resumeId, linkId } = req.params;
 
-		const user = req.user;
-
 		const existingLinks = await Link.findOne({ resumeId });
 		if (!existingLinks) {
 			return res.status(400).json({ message: 'Links do not exist' });
@@ -128,8 +124,6 @@ const delete_link = async (req, res) => {
 const delete_LinkSection = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
-		const user = req.user;
 		const resume = req.resume;
 
 		const existingLinks = await Link.findOne({ resumeId });

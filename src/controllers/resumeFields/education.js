@@ -43,8 +43,6 @@ const add_school = async (req, res) => {
 			description: '',
 		};
 
-		const user = req.user;
-
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
 			education_section = await create_education(resumeId);
@@ -74,8 +72,6 @@ const update_school = async (req, res) => {
 			city,
 			description,
 		} = req.body;
-
-		const user = req.user;
 
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
@@ -131,8 +127,6 @@ const delete_school = async (req, res) => {
 	try {
 		const { resumeId, schoolId } = req.params;
 
-		const user = req.user;
-
 		const existingEducation = await Education.findOne({ resumeId });
 		if (!existingEducation) {
 			return res.status(400).json({ message: 'Education do not exist' });
@@ -153,8 +147,6 @@ const delete_school = async (req, res) => {
 const delete_Education = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
-		const user = req.user;
 		const resume = req.resume;
 		
 		const existingEducation = await Education.findOne({ resumeId });
