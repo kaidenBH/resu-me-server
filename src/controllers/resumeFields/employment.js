@@ -2,7 +2,7 @@ const Employment = require('../../models/resumeFields/employment');
 const Resume = require('../../models/resume');
 const mongoose = require('mongoose');
 
-const create_employmentRecord = async (resumeId) => {
+const create_employment = async (resumeId) => {
 	try {
 		const defaultEmployment = {
 			job_title: '',
@@ -42,21 +42,6 @@ const add_employmentRecord = async (req, res) => {
 			description: '',
 		};
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
-		const user = req.user;
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-
 		let employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
 			employment_section = await create_employmentRecord(resumeId);
@@ -89,11 +74,6 @@ const update_employmentRecord = async (req, res) => {
 			description,
 		} = req.body;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
 
 		const employment_section = await Employment.findOne({ resumeId });
@@ -113,14 +93,6 @@ const update_employmentRecord = async (req, res) => {
 				],
 			});
 			return res.status(200).json({ employment_section });
-		}
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
 		}
 
 		if (field_name) employment_section.field_name = field_name;
@@ -161,11 +133,6 @@ const delete_employmentRecord = async (req, res) => {
 	try {
 		const { resumeId, employmentId } = req.params;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
 
 		const existingRecord = await Employment.findOne({ resumeId });
@@ -173,14 +140,6 @@ const delete_employmentRecord = async (req, res) => {
 			return res
 				.status(400)
 				.json({ message: 'Employment record do not exist' });
-		}
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
 		}
 
 		existingRecord.employments.pull({ _id: employmentId });
@@ -201,12 +160,8 @@ const delete_employment = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
+		const resume = req.resume;
 
 		const existingRecord = await Employment.findOne({ resumeId });
 		if (!existingRecord) {
@@ -215,18 +170,10 @@ const delete_employment = async (req, res) => {
 				.json({ message: 'Employment record do not exist' });
 		}
 
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-
 		await Employment.deleteOne({ resumeId });
 
-		existingResume.fields.employment_section = undefined;
-		await existingResume.save();
+		resume.fields.employment_section = undefined;
+		await resume.save();
 
 		return res
 			.status(200)
@@ -242,7 +189,7 @@ const delete_employment = async (req, res) => {
 };
 
 module.exports = {
-	create_employmentRecord,
+	create_employment,
 	add_employmentRecord,
 	update_employmentRecord,
 	delete_employmentRecord,

@@ -3,11 +3,11 @@ const User = require('../models/user');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const auth = async (req, res, next) => {
+const authWithAllowness = async (req, res, next) => {
 	try {
 		const token = req.headers.authorization;
 		if (!token) {
-			return res.status(400).json({ message: 'login to make this action' });
+			return next();
 		}
 
 		// Verify the token
@@ -47,4 +47,4 @@ const auth = async (req, res, next) => {
 	}
 };
 
-module.exports = auth;
+module.exports = authWithAllowness;

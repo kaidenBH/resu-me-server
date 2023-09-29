@@ -24,17 +24,21 @@ const newResume = async (req, res) => {
 				newResume._id,
 				user,
 			);
-		const employment_section =
-			await resumeFields.employment.create_employmentRecord(
+		const employment_section = 
+			await resumeFields.employment.create_employment(
 				newResume._id,
 			);
 		const education_section = await resumeFields.education.create_education(
+			newResume._id,
+		);
+		const link_section = await resumeFields.links.create_links(
 			newResume._id,
 		);
 
 		newResume.fields.personal_section = personal_section;
 		newResume.fields.employment_section = employment_section;
 		newResume.fields.education_section = education_section;
+		newResume.fields.link_section = link_section;
 		await newResume.save();
 
 		return res.status(200).json({ newResume });

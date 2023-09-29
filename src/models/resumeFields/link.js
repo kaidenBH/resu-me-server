@@ -7,8 +7,12 @@ const linkSchema = mongoose.Schema({
 		required: true,
 	},
 	field_name: { type: String, default: 'Websites & Links' },
-	webite_name: { type: String, default: '' },
-	url: { type: String, default: '' },
+	links: [
+		{
+			webite_name: { type: String, default: '' },
+			url: { type: String, default: '' },
+		}
+	]
 });
 
 module.exports = mongoose.model('Link', linkSchema);

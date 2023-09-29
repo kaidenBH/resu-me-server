@@ -37,11 +37,6 @@ const update_personalSection = async (req, res) => {
 			summary,
 		} = req.body;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
 
 		const existingSection = await Personal.findOne({ resumeId });
@@ -57,14 +52,6 @@ const update_personalSection = async (req, res) => {
 				summary: summary || '',
 			});
 			return res.status(200).json({ personal_section: existingSection });
-		}
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
 		}
 
 		const updateFields = {};

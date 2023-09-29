@@ -43,20 +43,7 @@ const add_school = async (req, res) => {
 			description: '',
 		};
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
 
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
@@ -88,11 +75,6 @@ const update_school = async (req, res) => {
 			description,
 		} = req.body;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
 
 		let education_section = await Education.findOne({ resumeId });
@@ -112,14 +94,6 @@ const update_school = async (req, res) => {
 				],
 			});
 			return res.status(200).json({ education_section });
-		}
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
 		}
 
 		if (field_name) education_section.field_name = field_name;
@@ -157,24 +131,11 @@ const delete_school = async (req, res) => {
 	try {
 		const { resumeId, schoolId } = req.params;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
 
 		const existingEducation = await Education.findOne({ resumeId });
 		if (!existingEducation) {
 			return res.status(400).json({ message: 'Education do not exist' });
-		}
-
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
 		}
 
 		existingEducation.schools.pull({ _id: schoolId });
@@ -193,30 +154,18 @@ const delete_Education = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
 
-		if (!req.user) {
-			return res
-				.status(400)
-				.json({ message: 'login to make this action' });
-		}
 		const user = req.user;
-
+		const resume = req.resume;
+		
 		const existingEducation = await Education.findOne({ resumeId });
 		if (!existingEducation) {
 			return res.status(400).json({ message: 'Education do not exist' });
 		}
 
-		const existingResume = await Resume.findOne({ _id: resumeId });
-		if (!existingResume) {
-			return res.status(404).json({ message: 'resume do not exists' });
-		}
-		if (user._id.toString() !== existingResume.ownerId.toString()) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-
 		await Education.deleteOne({ resumeId });
 
-		existingResume.fields.education_section = undefined;
-		await existingResume.save();
+		resume.fields.education_section = undefined;
+		await resume.save();
 
 		return res
 			.status(200)
