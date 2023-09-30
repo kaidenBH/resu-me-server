@@ -28,7 +28,7 @@ const create_skills = async (resumeId) => {
 const add_skill = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
+		const resume = req.resume;
 		const defaultSkills = {
 			skill_name: '',
 			level: 5,
@@ -37,6 +37,8 @@ const add_skill = async (req, res) => {
 		let skill_section = await Skill.findOne({ resumeId });
 		if (!skill_section) {
 			skill_section = await create_skills(resumeId);
+			resume.fields.skill_section = skill_section;
+			await resume.save();
 		} else {
 			skill_section.skills.push(defaultSkills);
 			skill_section = await skill_section.save();

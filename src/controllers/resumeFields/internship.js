@@ -32,7 +32,7 @@ const create_internship = async (resumeId) => {
 const add_internshipRecord = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
+		const resume = req.resume;
 		const defaultInternship = {
 			job_title: '',
 			employer_name: '',
@@ -45,6 +45,8 @@ const add_internshipRecord = async (req, res) => {
 		let internship_section = await Internship.findOne({ resumeId });
 		if (!internship_section) {
 			internship_section = await create_internship(resumeId);
+			resume.fields.internship_section = internship_section;
+			await resume.save();
 		} else {
 			internship_section.internships.push(defaultInternship);
 			internship_section = await internship_section.save();

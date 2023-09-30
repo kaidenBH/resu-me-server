@@ -33,7 +33,7 @@ const create_education = async (resumeId) => {
 const add_school = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
+		const resume = req.resume;
 		const defaultSchool = {
 			school_name: '',
 			degree_title: '',
@@ -46,6 +46,8 @@ const add_school = async (req, res) => {
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
 			education_section = await create_education(resumeId);
+			resume.fields.education_section = education_section;
+			await resume.save();
 		} else {
 			education_section.schools.push(defaultSchool);
 			education_section = await education_section.save();

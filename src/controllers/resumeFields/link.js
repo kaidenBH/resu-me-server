@@ -28,6 +28,7 @@ const create_links = async (resumeId) => {
 const add_link = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
+		const resume = req.resume;
 
 		const defaultLinks = {
 			webite_name: '',
@@ -37,6 +38,8 @@ const add_link = async (req, res) => {
 		let link_section = await Link.findOne({ resumeId });
 		if (!link_section) {
 			link_section = await create_links(resumeId);
+			resume.fields.link_section = link_section;
+			await resume.save();
 		} else {
 			link_section.links.push(defaultLinks);
 			link_section = await link_section.save();

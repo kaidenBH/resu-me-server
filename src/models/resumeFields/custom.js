@@ -7,11 +7,15 @@ const customSchema = mongoose.Schema({
 		required: true,
 	},
 	field_name: { type: String, default: 'Untitled' },
-	activity_title: { type: String, default: '' },
-	start_date: { type: String, default: '' },
-	end_date: { type: String, default: '' },
-	city: { type: String, default: '' },
-	description: { type: String, default: '' },
+	activities: [
+		{
+			activity_title: { type: String, default: '' },
+			start_date: { type: String, default: '' },
+			end_date: { type: String, default: '' },
+			city: { type: String, default: '' },
+			description: { type: String, default: '' },
+		}
+	]
 });
 
 module.exports = mongoose.model('Custom', customSchema);

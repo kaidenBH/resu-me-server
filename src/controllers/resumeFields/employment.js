@@ -32,7 +32,7 @@ const create_employment = async (resumeId) => {
 const add_employmentRecord = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-
+		const resume = req.resume;
 		const defaultEmployment = {
 			job_title: '',
 			employer_name: '',
@@ -45,6 +45,8 @@ const add_employmentRecord = async (req, res) => {
 		let employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
 			employment_section = await create_employment(resumeId);
+			resume.fields.employment_section = employment_section;
+			await resume.save();
 		} else {
 			employment_section.employments.push(defaultEmployment);
 			employment_section = await employment_section.save();

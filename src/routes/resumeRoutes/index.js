@@ -1,4 +1,3 @@
-const personal = require('./personal');
 const employment = require('./employment');
 const education = require('./education');
 const links = require('./link');
@@ -9,7 +8,6 @@ const course = require('./course');
 const custom = require('./custom');
 
 module.exports = {
-	personal,
 	employment,
 	education,
 	links,
