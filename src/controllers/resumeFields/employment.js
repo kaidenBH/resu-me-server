@@ -44,7 +44,7 @@ const add_employmentRecord = async (req, res) => {
 
 		let employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
-			employment_section = await create_employmentRecord(resumeId);
+			employment_section = await create_employment(resumeId);
 		} else {
 			employment_section.employments.push(defaultEmployment);
 			employment_section = await employment_section.save();

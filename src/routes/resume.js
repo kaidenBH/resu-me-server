@@ -151,6 +151,30 @@ router.delete(
 	resumeController.resumeFields.languages.delete_languageSection,
 );
 
-
+// internship section 
+router.patch(
+	'/addInternShipRecord/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.internship.add_internshipRecord,
+);
+router.patch(
+	'/updateInternShipRecord/:resumeId/:internshipId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.internship.update_internshipRecord,
+);
+router.delete(
+	'/deleteInternShipRecord/:resumeId/:internshipId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.internship.delete_internshipRecord,
+);
+router.delete(
+	'/deleteInternShip/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.resumeFields.internship.delete_internship,
+);
 
 module.exports = router;
