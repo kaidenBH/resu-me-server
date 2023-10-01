@@ -44,7 +44,7 @@ const add_course = async (req, res) => {
 		let course_section = await Course.findOne({ resumeId });
 		if (!course_section) {
 			course_section = await create_course(resumeId);
-			esume.fields.course_section = course_section;
+			resume.fields.course_section = course_section;
 			await resume.save();
 		} else {
 			course_section.courses.push(defaultCourse);

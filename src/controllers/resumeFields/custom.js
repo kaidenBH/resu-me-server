@@ -17,6 +17,12 @@ const create_customActivity = async (req, res) => {
 			activities: [defaultCustom],
 		});
 
+		resume.fields.customActivity_section ={ 
+			...req.resume.fields.customActivity_section, 
+			...{ [customActivity_section._id.toString() ]: customActivity_section }
+		}
+		await resume.save();
+		
 		return res.status(200).json({ customActivity_section });
 	} catch (error) {
 		console.log(error);
@@ -47,6 +53,11 @@ const add_customActivity = async (req, res) => {
 				resumeId,
 				activities: [defaultCustom],
 			});
+			resume.fields.customActivity_section ={ 
+				...req.resume.fields.customActivity_section, 
+				...{ [customActivity_section._id.toString() ]: customActivity_section }
+			}
+			await resume.save();
 		} else {
 			customActivity_section.activities.push(defaultCustom);
 			customActivity_section = await customActivity_section.save();
@@ -74,6 +85,7 @@ const update_customActivity = async (req, res) => {
 			city,
 			description,
 		} = req.body;
+		const resume = req.resume;
 
 		let customActivity_section = await Custom.findOne({ _id });
 		if (!customActivity_section) {
@@ -90,6 +102,11 @@ const update_customActivity = async (req, res) => {
 					},
 				],
 			});
+			resume.fields.customActivity_section ={ 
+				...req.resume.fields.customActivity_section, 
+				...{ [customActivity_section._id.toString() ]: customActivity_section }
+			}
+			await resume.save();
 			return res.status(200).json({ customActivity_section });
 		}
 
@@ -164,6 +181,11 @@ const delete_custom = async (req, res) => {
 		}
 
 		await Custom.deleteOne({ _id });
+		if (resume.fields.customActivity_section && resume.fields.customActivity_section[_id.toString()]) {
+					delete resume.fields.customActivity_section[_id.toString()];
+					console.log(resume.fields.customActivity_section);
+				}
+				await resume.save();
 
 		return res
 			.status(200)

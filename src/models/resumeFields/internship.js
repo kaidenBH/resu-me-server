@@ -6,7 +6,7 @@ const internshipSchema = mongoose.Schema({
 		ref: 'Resume',
 		required: true,
 	},
-	field_name: { type: String, default: 'Employment History' },
+	field_name: { type: String, default: 'Internship History' },
 	internships: [
 		{
 			job_title: { type: String, default: '' },
