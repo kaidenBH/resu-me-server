@@ -37,7 +37,7 @@ const add_language = async (req, res) => {
 		let language_section = await Language.findOne({ resumeId });
 		if (!language_section) {
 			language_section = await create_languages(resumeId);
-			resume.fields.language_section = language_section;
+			resume.fields.push({ type: language_section, typeModel: 'Language', section_id: language_section._id });
 			await resume.save();
 		} else {
 			language_section.languages.push(defaultlanguages);
@@ -135,8 +135,14 @@ const delete_languageSection = async (req, res) => {
 
 		await Language.deleteOne({ resumeId });
 
-		resume.fields.language_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Language' && field.section_id.toString() === existinglanguages._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

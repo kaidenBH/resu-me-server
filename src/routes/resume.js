@@ -6,7 +6,8 @@ const authWithAllowness = require('../middleware/authWithAllowness');
 const resumeRoutes = require('./resumeRoutes');
 
 // resume routes
-router.post('/create', auth, resumeController.newResume);
+router.post('/', auth, resumeController.newResume);
+router.get('/:resumeId', auth, resumeValidation, resumeController.get_resume);
 
 /*router.post('/duplicate/:id', resumeController.duplicateResume);
 

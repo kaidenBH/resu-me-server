@@ -44,7 +44,7 @@ const add_course = async (req, res) => {
 		let course_section = await Course.findOne({ resumeId });
 		if (!course_section) {
 			course_section = await create_course(resumeId);
-			resume.fields.course_section = course_section;
+			resume.fields.push({ type: course_section, typeModel: 'Course', section_id: course_section._id });
 			await resume.save();
 		} else {
 			course_section.courses.push(defaultCourse);
@@ -153,8 +153,14 @@ const delete_CourseSection = async (req, res) => {
 
 		await Course.deleteOne({ resumeId });
 
-		resume.fields.course_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Course' && field.section_id.toString() === existingCourse._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

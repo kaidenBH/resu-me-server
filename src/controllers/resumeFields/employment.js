@@ -45,7 +45,7 @@ const add_employmentRecord = async (req, res) => {
 		let employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
 			employment_section = await create_employment(resumeId);
-			resume.fields.employment_section = employment_section;
+			resume.fields.push({ type: employment_section, typeModel: 'Employment', section_id: employment_section._id });
 			await resume.save();
 		} else {
 			employment_section.employments.push(defaultEmployment);
@@ -168,8 +168,14 @@ const delete_employment = async (req, res) => {
 
 		await Employment.deleteOne({ resumeId });
 
-		resume.fields.employment_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Employment' && field.section_id.toString() === existingRecord._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

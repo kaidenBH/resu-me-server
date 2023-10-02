@@ -46,7 +46,7 @@ const add_school = async (req, res) => {
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
 			education_section = await create_education(resumeId);
-			resume.fields.education_section = education_section;
+			resume.fields.push({ type: education_section, typeModel: 'Education', section_id: education_section._id });
 			await resume.save();
 		} else {
 			education_section.schools.push(defaultSchool);
@@ -158,8 +158,14 @@ const delete_Education = async (req, res) => {
 
 		await Education.deleteOne({ resumeId });
 
-		resume.fields.education_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Education' && field.section_id.toString() === existingEducation._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

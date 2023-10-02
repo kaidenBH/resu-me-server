@@ -42,12 +42,13 @@ const newResume = async (req, res) => {
 				newResume._id,
 			);
 
-		newResume.fields.personal_section = personal_section;
-		newResume.fields.link_section = link_section;
-		newResume.fields.employment_section = employment_section;
-		newResume.fields.education_section = education_section;
-		newResume.fields.skill_section = skill_section;
-		newResume.fields.language_section = language_section;
+		newResume.fields.push({ type: personal_section, typeModel: 'Pesonal', section_id: personal_section._id });
+		newResume.fields.push({ type: link_section, typeModel: 'Link', section_id: link_section._id });
+		newResume.fields.push({ type: employment_section, typeModel: 'Employment', section_id: employment_section._id });
+		newResume.fields.push({ type: education_section, typeModel: 'Education', section_id: education_section._id });
+		newResume.fields.push({ type: skill_section, typeModel: 'Skill', section_id: skill_section._id });
+		newResume.fields.push({ type: language_section, typeModel: 'Language', section_id: language_section._id });
+
 		await newResume.save();
 
 		return res.status(200).json({ newResume });
@@ -58,9 +59,25 @@ const newResume = async (req, res) => {
 	}
 };
 
+const get_resume = async (req, res) => {
+	try {
+		const { resumeId } = req.params;
+		
+		const resume = await Resume.findById(resumeId);
+		const personalField = resume.fields.find(field => field.typeModel === 'Personal');
+
+		return res.status(200).json({ resume });
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ message: 'something went wrong in retrieving resume' });
+	}
+}
+
 module.exports = {
 	newResume,
 	resumeFields,
+	get_resume,
 	/*
     duplicateResume,
     updateResumeTitle,

@@ -16,11 +16,8 @@ const create_customActivity = async (req, res) => {
 			resumeId: resume._id,
 			activities: [defaultCustom],
 		});
-
-		resume.fields.customActivity_section ={ 
-			...req.resume.fields.customActivity_section, 
-			...{ [customActivity_section._id.toString() ]: customActivity_section }
-		}
+		
+		resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
 		await resume.save();
 		
 		return res.status(200).json({ customActivity_section });
@@ -53,10 +50,7 @@ const add_customActivity = async (req, res) => {
 				resumeId,
 				activities: [defaultCustom],
 			});
-			resume.fields.customActivity_section ={ 
-				...req.resume.fields.customActivity_section, 
-				...{ [customActivity_section._id.toString() ]: customActivity_section }
-			}
+			resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
 			await resume.save();
 		} else {
 			customActivity_section.activities.push(defaultCustom);
@@ -102,10 +96,7 @@ const update_customActivity = async (req, res) => {
 					},
 				],
 			});
-			resume.fields.customActivity_section ={ 
-				...req.resume.fields.customActivity_section, 
-				...{ [customActivity_section._id.toString() ]: customActivity_section }
-			}
+			resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
 			await resume.save();
 			return res.status(200).json({ customActivity_section });
 		}
@@ -181,11 +172,14 @@ const delete_custom = async (req, res) => {
 		}
 
 		await Custom.deleteOne({ _id });
-		if (resume.fields.customActivity_section && resume.fields.customActivity_section[_id.toString()]) {
-					delete resume.fields.customActivity_section[_id.toString()];
-					console.log(resume.fields.customActivity_section);
-				}
-				await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Custom' && field.section_id.toString() === existingRecord._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

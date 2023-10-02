@@ -37,7 +37,7 @@ const add_skill = async (req, res) => {
 		let skill_section = await Skill.findOne({ resumeId });
 		if (!skill_section) {
 			skill_section = await create_skills(resumeId);
-			resume.fields.skill_section = skill_section;
+			resume.fields.push({ type: skill_section, typeModel: 'Skill', section_id: skill_section._id });
 			await resume.save();
 		} else {
 			skill_section.skills.push(defaultSkills);
@@ -135,8 +135,14 @@ const delete_skillSection = async (req, res) => {
 
 		await Skill.deleteOne({ resumeId });
 
-		resume.fields.skill_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Skill' && field.section_id.toString() === existingskills._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)
