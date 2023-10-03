@@ -37,7 +37,7 @@ const add_skill = async (req, res) => {
 		let skill_section = await Skill.findOne({ resumeId });
 		if (!skill_section) {
 			skill_section = await create_skills(resumeId);
-			resume.fields.push({ type: skill_section, typeModel: 'Skill', section_id: skill_section._id });
+			resume.fields.push({ typeModel: 'Skill', section_id: skill_section._id });
 			await resume.save();
 		} else {
 			skill_section.skills.push(defaultSkills);

@@ -38,7 +38,7 @@ const add_link = async (req, res) => {
 		let link_section = await Link.findOne({ resumeId });
 		if (!link_section) {
 			link_section = await create_links(resumeId);
-			resume.fields.push({ type: link_section, typeModel: 'Link', section_id: link_section._id });
+			resume.fields.push({ typeModel: 'Link', section_id: link_section._id });
 			await resume.save();
 		} else {
 			link_section.links.push(defaultLinks);
@@ -113,14 +113,8 @@ const delete_link = async (req, res) => {
 			return res.status(400).json({ message: 'Links do not exist' });
 		}
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Link' && field.section_id.toString() === existingLinks._id.toString()
-		);
-	  
-		if (fieldIndex !== -1) {
-			resume.fields.splice(fieldIndex, 1);
-			await resume.save();
-		}
+		existingLinks.links.pull({ _id: linkId });
+		await existingLinks.save();
 
 		return res.status(200).json({ link_section: existingLinks });
 	} catch (error) {
@@ -143,8 +137,14 @@ const delete_LinkSection = async (req, res) => {
 
 		await Link.deleteOne({ resumeId });
 
-		resume.fields.link_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'Link' && field.section_id.toString() === existingLinks._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)

@@ -17,7 +17,7 @@ const create_customActivity = async (req, res) => {
 			activities: [defaultCustom],
 		});
 		
-		resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
+		resume.fields.push({ typeModel: 'Custom', section_id: customActivity_section._id });
 		await resume.save();
 		
 		return res.status(200).json({ customActivity_section });
@@ -50,7 +50,7 @@ const add_customActivity = async (req, res) => {
 				resumeId,
 				activities: [defaultCustom],
 			});
-			resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
+			resume.fields.push({ typeModel: 'Custom', section_id: customActivity_section._id });
 			await resume.save();
 		} else {
 			customActivity_section.activities.push(defaultCustom);
@@ -96,7 +96,7 @@ const update_customActivity = async (req, res) => {
 					},
 				],
 			});
-			resume.fields.push({ type: customActivity_section, typeModel: 'Custom', section_id: customActivity_section._id });
+			resume.fields.push({ typeModel: 'Custom', section_id: customActivity_section._id });
 			await resume.save();
 			return res.status(200).json({ customActivity_section });
 		}

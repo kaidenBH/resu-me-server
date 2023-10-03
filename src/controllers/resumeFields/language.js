@@ -37,7 +37,7 @@ const add_language = async (req, res) => {
 		let language_section = await Language.findOne({ resumeId });
 		if (!language_section) {
 			language_section = await create_languages(resumeId);
-			resume.fields.push({ type: language_section, typeModel: 'Language', section_id: language_section._id });
+			resume.fields.push({ typeModel: 'Language', section_id: language_section._id });
 			await resume.save();
 		} else {
 			language_section.languages.push(defaultlanguages);

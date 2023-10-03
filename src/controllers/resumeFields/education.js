@@ -46,7 +46,7 @@ const add_school = async (req, res) => {
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
 			education_section = await create_education(resumeId);
-			resume.fields.push({ type: education_section, typeModel: 'Education', section_id: education_section._id });
+			resume.fields.push({ typeModel: 'Education', section_id: education_section._id });
 			await resume.save();
 		} else {
 			education_section.schools.push(defaultSchool);

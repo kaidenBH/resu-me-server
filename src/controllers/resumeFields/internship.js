@@ -45,7 +45,7 @@ const add_internshipRecord = async (req, res) => {
 		let internship_section = await Internship.findOne({ resumeId });
 		if (!internship_section) {
 			internship_section = await create_internship(resumeId);
-			resume.fields.push({ type: internship_section, typeModel: 'Internship', section_id: internship_section._id });
+			resume.fields.push({ typeModel: 'InternShip', section_id: internship_section._id });
 			await resume.save();
 		} else {
 			internship_section.internships.push(defaultInternship);
@@ -141,14 +141,8 @@ const delete_internshipRecord = async (req, res) => {
 				.json({ message: 'Internship record do not exist' });
 		}
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'InternShip' && field.section_id.toString() === existingRecord._id.toString()
-		);
-	  
-		if (fieldIndex !== -1) {
-			resume.fields.splice(fieldIndex, 1);
-			await resume.save();
-		}
+		existingRecord.internships.pull({ _id: internshipId });
+		await existingRecord.save();
 
 		return res.status(200).json({ internship_section: existingRecord });
 	} catch (error) {
@@ -175,8 +169,14 @@ const delete_internship = async (req, res) => {
 
 		await Internship.deleteOne({ resumeId });
 
-		resume.fields.internship_section = undefined;
-		await resume.save();
+		const fieldIndex = resume.fields.findIndex(field => 
+			field.typeModel === 'InternShip' && field.section_id.toString() === existingRecord._id.toString()
+		);
+	  
+		if (fieldIndex !== -1) {
+			resume.fields.splice(fieldIndex, 1);
+			await resume.save();
+		}
 
 		return res
 			.status(200)
