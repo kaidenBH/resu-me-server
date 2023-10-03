@@ -116,19 +116,7 @@ const signin = async (req, res) => {
 
 const updateuser = async (req, res) => {
 	try {
-		if (!req.user) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-		const userId = req.user.id;
-
-		if (!mongoose.Types.ObjectId.isValid(userId)) {
-			return res.status(404).send('Invalid User');
-		}
-
-		const existingUser = await User.findOne({ _id: userId });
-		if (!existingUser) {
-			return res.status(404).json({ message: 'user do not exists.' });
-		}
+		const user = req.user;
 
 		const {
 			email,
@@ -146,7 +134,7 @@ const updateuser = async (req, res) => {
 
 		const isPassowrdCorrect = await bcrypt.compare(
 			oldPassword,
-			existingUser.password,
+			user.password,
 		);
 
 		if (!isPassowrdCorrect) {
@@ -160,7 +148,7 @@ const updateuser = async (req, res) => {
 				return res.status(400).json({ message: 'invalid new email.' });
 			}
 			const existEmail = await User.findOne({ email });
-			const oldEmail = existingUser.email;
+			const oldEmail = user.email;
 			if (existEmail && email !== oldEmail) {
 				return res
 					.status(406)
@@ -187,7 +175,7 @@ const updateuser = async (req, res) => {
 		if (last_name) updateFields.last_name = last_name;
 		if (image) updateFields.image = image;
 
-		const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+		const updatedUser = await User.findByIdAndUpdate(user._id, updateFields, {
 			new: true,
 		});
 
@@ -213,29 +201,20 @@ const updateuser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
 	try {
-		if (!req.user) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-		const userId = req.user.id;
-
-		const existinguser = await User.findById(userId);
-
-		if (!existinguser) {
-			return res.status(401).json({ message: 'User not found.' });
-		}
+		const user = req.user;
 
 		const token = jwt.sign(
 			{
-				email: existinguser.email,
-				id: existinguser._id,
-				account_type: existinguser.account_type,
+				email: user.email,
+				id: user._id,
+				account_type: user.account_type,
 			},
 			process.env.SECRET_TOKEN,
 			{ expiresIn: '7d' },
 		);
-		const { _id, verificationToken, password, ...infos } =
-			existinguser.toObject();
+		const { _id, verificationToken, password, ...infos } = user.toObject();
 		return res.status(200).json({ infos, token });
+
 	} catch (error) {
 		return res.status(403).json({ message: 'Invalid refresh token.' });
 	}
@@ -243,25 +222,17 @@ const refreshToken = async (req, res) => {
 
 const sendVerificationEmail = async (req, res) => {
 	try {
-		if (!req.user) {
-			return res.status(403).json({ message: 'Invalid request' });
-		}
-		const email = req.user.email;
-		const existingUser = await User.findOne({ email });
-
-		if (!existingUser) {
-			return res.status(404).json({ message: 'User does not exists.' });
-		}
+		const user = req.user;
 		const verificationToken = crypto.randomBytes(20).toString('hex');
 
-		existingUser.verificationToken = verificationToken;
-		await existingUser.save();
+		user.verificationToken = verificationToken;
+		await user.save();
 
 		const verificationLink = `http://${req.hostname}/user/verify/${verificationToken}`;
 
 		const mailDetails = {
 			from: process.env.EMAIL,
-			to: email,
+			to: user.email,
 			subject: 'Email Verification',
 			text: `Hello, thanks for registration . Please click on the following link to verify your email: ${verificationLink}`,
 		};

@@ -66,7 +66,7 @@ const newResume = async (req, res) => {
 		await newResume.save();
 
 		const { fields, ownerId, ...resume } = newResume.toObject();
-		return res.status(200).json({ resume });
+		return res.status(200).json({ owner: true, ...resume });
 	} catch (error) {
 		return res
 			.status(500)
@@ -106,6 +106,53 @@ const get_resume = async (req, res) => {
 			.json({ message: 'something went wrong in retrieving resume' });
 	}
 };
+
+const updateResume = async (req, res) => {
+	try {
+		const { title, template } = req.body;
+		const { user, resume } = req;
+
+		if (template && template !== "Simple" && user.account_type === "Basic") {
+			return res
+				.status(400)
+				.json({ message: 'upgrade to make this chage' });
+		}
+
+		if (title) resume.title = title;
+		if (template) resume.template = template;
+		await resume.save();
+
+		return res
+			.status(200)
+			.json({
+				message: 'updated resume with success'
+			});
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(500)
+			.json({ message: 'something went wrong in updating resume' });
+	}
+}
+
+const removeResume = async (req, res) => {
+	try {
+		const resume = req.resume;
+
+		await Resume.deleteOne({ _id: resume._id });
+		
+		return res
+			.status(200)
+			.json({
+				message: 'removed resume with success'
+			});
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(500)
+			.json({ message: 'something went wrong in removing resume' });
+	}
+}
 
 const reorderFields = async (req, res) => {
 	try {
@@ -147,6 +194,8 @@ module.exports = {
 	newResume,
 	resumeFields,
 	get_resume,
+	updateResume,
+	removeResume,
 	reorderFields,
 	/*
     duplicateResume,
