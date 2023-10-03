@@ -138,7 +138,17 @@ const updateResume = async (req, res) => {
 const removeResume = async (req, res) => {
 	try {
 		const resume = req.resume;
+		const fields = resume.fields;
 
+        // Step 2 & 3: Loop through fields and delete associated models
+        for (const field of fields) {
+            const modelName = field.typeModel;
+            const sectionId = field.section_id;
+
+            const Model = mongoose.model(modelName);
+
+            await Model.deleteOne({ _id: sectionId });
+        }
 		await Resume.deleteOne({ _id: resume._id });
 		
 		return res

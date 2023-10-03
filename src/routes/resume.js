@@ -8,8 +8,8 @@ const resumeRoutes = require('./resumeRoutes');
 // resume routes
 router.post('/', auth, resumeController.newResume);
 router.get('/:resumeId', authWithAllowness, resumeController.get_resume);
-router.patch('/resumeId', auth, resumeValidation, resumeController.updateResumeTitle);
-router.delete('/resumeId', auth, resumeValidation, resumeController.deleteResume);
+router.patch('/:resumeId', auth, resumeValidation, resumeController.updateResume);
+router.delete('/:resumeId', auth, resumeValidation, resumeController.removeResume);
 router.patch(
 	'/reOrder/:resumeId',
 	auth,
