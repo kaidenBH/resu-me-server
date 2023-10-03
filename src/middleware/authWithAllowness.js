@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Resume = require('../models/resume');
 const dotenv = require('dotenv');
 dotenv.config();
 
 const authWithAllowness = async (req, res, next) => {
 	try {
 		const token = req.headers.authorization;
+		const { resumeId } = req.params;
 		if (!token) {
+			req.owner = false;
 			return next();
 		}
 
@@ -30,8 +33,17 @@ const authWithAllowness = async (req, res, next) => {
 							.status(401)
 							.json({ message: 'User not found.' });
 					}
+					
+					const existingResume = await Resume.findOne({ _id: resumeId });
+					if (!existingResume) {
+						return res.status(401).json({ message: 'resume do not exists' });
+					}
 
-					req.user = user; // Assign the user to req.user
+					if (user._id.toString() !== existingResume.ownerId.toString()) {
+						req.owner = false;
+						next();
+					}
+					req.owner = true; 
 					next();
 				} catch (error) {
 					console.log(error);

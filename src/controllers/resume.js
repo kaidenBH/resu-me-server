@@ -42,16 +42,17 @@ const newResume = async (req, res) => {
 				newResume._id,
 			);
 
-		newResume.fields.push({ type: personal_section, typeModel: 'Pesonal', section_id: personal_section._id });
-		newResume.fields.push({ type: link_section, typeModel: 'Link', section_id: link_section._id });
-		newResume.fields.push({ type: employment_section, typeModel: 'Employment', section_id: employment_section._id });
-		newResume.fields.push({ type: education_section, typeModel: 'Education', section_id: education_section._id });
-		newResume.fields.push({ type: skill_section, typeModel: 'Skill', section_id: skill_section._id });
-		newResume.fields.push({ type: language_section, typeModel: 'Language', section_id: language_section._id });
+		newResume.fields.push({ typeModel: 'Personal', section_id: personal_section._id });
+		newResume.fields.push({ typeModel: 'Link', section_id: link_section._id });
+		newResume.fields.push({ typeModel: 'Employment', section_id: employment_section._id });
+		newResume.fields.push({ typeModel: 'Education', section_id: education_section._id });
+		newResume.fields.push({ typeModel: 'Skill', section_id: skill_section._id });
+		newResume.fields.push({ typeModel: 'Language', section_id: language_section._id });
 
 		await newResume.save();
 
-		return res.status(200).json({ newResume });
+		const { fields, ownerId, ...resume } = newResume.toObject();
+		return res.status(200).json({ resume });
 	} catch (error) {
 		return res
 			.status(500)
@@ -62,12 +63,28 @@ const newResume = async (req, res) => {
 const get_resume = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
-		
-		const resume = await Resume.findById(resumeId);
-		const personalField = resume.fields.find(field => field.typeModel === 'Personal');
+		const owner = req.owner || false;
 
-		return res.status(200).json({ resume });
+		let resume = await Resume.findById(resumeId);
+
+        if (!resume) {
+            return res.status(404).json({ message: 'Resume not found' });
+        }
+
+
+        const populatedFields = await Promise.all(
+            resume.fields.map(async (field) => {
+                const Model = mongoose.model(field.typeModel);
+                const fieldData = await Model.findById(field.section_id).exec();
+                return { type: field.typeModel , ...fieldData._doc };
+            })
+        );
+		const { ownerId, ...existingResume } = resume.toObject();
+
+        return res.status(200).json({ resume: { owner, ...existingResume, fields: populatedFields } });
+
 	} catch (error) {
+		console.log(error);
 		return res
 			.status(500)
 			.json({ message: 'something went wrong in retrieving resume' });

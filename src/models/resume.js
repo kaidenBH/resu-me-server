@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema(
 	{
-		type: { type: mongoose.Schema.Types.ObjectId, refPath: 'typeModel' },
 		typeModel: String, // This will hold the model name
-		section_id: { type: mongoose.Schema.Types.ObjectId, required: true }
+		section_id: { type: mongoose.Schema.Types.ObjectId, required: true, refPath: 'typeModel' }
   	}
 );
 

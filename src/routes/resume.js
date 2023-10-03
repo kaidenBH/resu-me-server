@@ -7,7 +7,7 @@ const resumeRoutes = require('./resumeRoutes');
 
 // resume routes
 router.post('/', auth, resumeController.newResume);
-router.get('/:resumeId', auth, resumeValidation, resumeController.get_resume);
+router.get('/:resumeId', authWithAllowness, resumeController.get_resume);
 
 /*router.post('/duplicate/:id', resumeController.duplicateResume);
 
