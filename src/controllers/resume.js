@@ -109,8 +109,9 @@ const get_resume = async (req, res) => {
 
 const reorderFields = async (req, res) => {
 	try {
-		/*{
-  			"newOrder": ["Skill", "Employment", "Personal", "Link", "Education", "Language"]
+		/*
+		{
+			"newOrder": ["616bc9e7e7f2b53c5c7e14e1", "616bc9e7e7f2b53c5c7e14e2", "616bc9e7e7f2b53c5c7e14e3"]
 		}*/
 		const { newOrder } = req.body;
 
@@ -118,16 +119,15 @@ const reorderFields = async (req, res) => {
 
 		const fieldPositions = new Map();
 		resume.fields.forEach((field, index) => {
-			fieldPositions.set(field.typeModel, index);
+		fieldPositions.set(field.section_id.toString(), index);
 		});
 
-		// Rearrange the fields based on the new order
 		const updatedFields = [];
-		newOrder.forEach((typeModel) => {
-			const position = fieldPositions.get(typeModel);
-			if (position !== undefined) {
-				updatedFields.push(resume.fields[position]);
-			}
+		newOrder.forEach(sectionId => {
+		const position = fieldPositions.get(sectionId);
+		if (position !== undefined) {
+			updatedFields.push(resume.fields[position]);
+		}
 		});
 
 		resume.fields = updatedFields;
