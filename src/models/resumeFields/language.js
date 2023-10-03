@@ -11,8 +11,8 @@ const languageSchema = mongoose.Schema({
 		{
 			language: { type: String, default: '' },
 			level: { type: Number, default: 5 },
-		}
-	]
+		},
+	],
 });
 
 module.exports = mongoose.model('Language', languageSchema);

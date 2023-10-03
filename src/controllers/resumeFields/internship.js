@@ -45,7 +45,10 @@ const add_internshipRecord = async (req, res) => {
 		let internship_section = await Internship.findOne({ resumeId });
 		if (!internship_section) {
 			internship_section = await create_internship(resumeId);
-			resume.fields.push({ typeModel: 'InternShip', section_id: internship_section._id });
+			resume.fields.push({
+				typeModel: 'InternShip',
+				section_id: internship_section._id,
+			});
 			await resume.save();
 		} else {
 			internship_section.internships.push(defaultInternship);
@@ -55,11 +58,9 @@ const add_internshipRecord = async (req, res) => {
 		return res.status(200).json({ internship_section });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in adding internship record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in adding internship record',
+		});
 	}
 };
 
@@ -121,11 +122,9 @@ const update_internshipRecord = async (req, res) => {
 			.status(200)
 			.json({ internship_section: updatedInternshipRecord });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating internship record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating internship record',
+		});
 	}
 };
 
@@ -133,7 +132,7 @@ const delete_internshipRecord = async (req, res) => {
 	try {
 		const { resumeId, internshipId } = req.params;
 		const resume = req.resume;
-		
+
 		const existingRecord = await Internship.findOne({ resumeId });
 		if (!existingRecord) {
 			return res
@@ -147,11 +146,9 @@ const delete_internshipRecord = async (req, res) => {
 		return res.status(200).json({ internship_section: existingRecord });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in deleting internship record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in deleting internship record',
+		});
 	}
 };
 
@@ -169,10 +166,12 @@ const delete_internship = async (req, res) => {
 
 		await Internship.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'InternShip' && field.section_id.toString() === existingRecord._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'InternShip' &&
+				field.section_id.toString() === existingRecord._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();
@@ -183,11 +182,9 @@ const delete_internship = async (req, res) => {
 			.json({ message: 'deleted internship successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in deleting internship record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in deleting internship record',
+		});
 	}
 };
 

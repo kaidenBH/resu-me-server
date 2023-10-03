@@ -14,8 +14,8 @@ const customSchema = mongoose.Schema({
 			end_date: { type: String, default: '' },
 			city: { type: String, default: '' },
 			description: { type: String, default: '' },
-		}
-	]
+		},
+	],
 });
 
 module.exports = mongoose.model('Custom', customSchema);

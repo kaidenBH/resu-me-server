@@ -44,7 +44,10 @@ const add_course = async (req, res) => {
 		let course_section = await Course.findOne({ resumeId });
 		if (!course_section) {
 			course_section = await create_course(resumeId);
-			resume.fields.push({ typeModel: 'Course', section_id: course_section._id });
+			resume.fields.push({
+				typeModel: 'Course',
+				section_id: course_section._id,
+			});
 			await resume.save();
 		} else {
 			course_section.courses.push(defaultCourse);
@@ -112,11 +115,9 @@ const update_course = async (req, res) => {
 
 		return res.status(200).json({ course_section: updatedCourse });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating employment record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating employment record',
+		});
 	}
 };
 
@@ -145,7 +146,7 @@ const delete_CourseSection = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
 		const resume = req.resume;
-		
+
 		const existingCourse = await Course.findOne({ resumeId });
 		if (!existingCourse) {
 			return res.status(400).json({ message: 'Course do not exist' });
@@ -153,18 +154,18 @@ const delete_CourseSection = async (req, res) => {
 
 		await Course.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Course' && field.section_id.toString() === existingCourse._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'Course' &&
+				field.section_id.toString() === existingCourse._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted course successfully' });
+		return res.status(200).json({ message: 'deleted course successfully' });
 	} catch (error) {
 		console.log(error);
 		return res

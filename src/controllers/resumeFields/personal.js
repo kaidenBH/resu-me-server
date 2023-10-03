@@ -82,11 +82,9 @@ const update_personalSection = async (req, res) => {
 		return res.status(200).json({ personal_section: updatedPersonSection });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating personal data',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating personal data',
+		});
 	}
 };
 

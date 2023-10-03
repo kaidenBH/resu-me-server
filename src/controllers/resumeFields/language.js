@@ -37,7 +37,10 @@ const add_language = async (req, res) => {
 		let language_section = await Language.findOne({ resumeId });
 		if (!language_section) {
 			language_section = await create_languages(resumeId);
-			resume.fields.push({ typeModel: 'Language', section_id: language_section._id });
+			resume.fields.push({
+				typeModel: 'Language',
+				section_id: language_section._id,
+			});
 			await resume.save();
 		} else {
 			language_section.languages.push(defaultlanguages);
@@ -55,11 +58,7 @@ const add_language = async (req, res) => {
 const update_language = async (req, res) => {
 	try {
 		const { resumeId, languageId } = req.params;
-		const {
-			field_name,
-			language,
-			level,
-		} = req.body;
+		const { field_name, language, level } = req.body;
 
 		let language_section = await Language.findOne({ resumeId });
 		if (!language_section) {
@@ -81,10 +80,8 @@ const update_language = async (req, res) => {
 
 		const updateFields = {};
 
-		if (language)
-			updateFields['languages.$[elem].language'] = language;
-		if (level)
-			updateFields['languages.$[elem].level'] = level;
+		if (language) updateFields['languages.$[elem].language'] = language;
+		if (level) updateFields['languages.$[elem].level'] = level;
 
 		const updatedlanguage = await Language.findOneAndUpdate(
 			{ resumeId },
@@ -94,11 +91,9 @@ const update_language = async (req, res) => {
 
 		return res.status(200).json({ language_section: updatedlanguage });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating Language',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating Language',
+		});
 	}
 };
 
@@ -135,10 +130,13 @@ const delete_languageSection = async (req, res) => {
 
 		await Language.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Language' && field.section_id.toString() === existinglanguages._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'Language' &&
+				field.section_id.toString() ===
+					existinglanguages._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();

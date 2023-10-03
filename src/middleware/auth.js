@@ -7,7 +7,9 @@ const auth = async (req, res, next) => {
 	try {
 		const token = req.headers.authorization;
 		if (!token) {
-			return res.status(400).json({ message: 'login to make this action' });
+			return res
+				.status(400)
+				.json({ message: 'login to make this action' });
 		}
 
 		// Verify the token

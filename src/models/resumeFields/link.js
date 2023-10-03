@@ -11,8 +11,8 @@ const linkSchema = mongoose.Schema({
 		{
 			webite_name: { type: String, default: '' },
 			url: { type: String, default: '' },
-		}
-	]
+		},
+	],
 });
 
 module.exports = mongoose.model('Link', linkSchema);

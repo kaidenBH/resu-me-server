@@ -45,7 +45,10 @@ const add_employmentRecord = async (req, res) => {
 		let employment_section = await Employment.findOne({ resumeId });
 		if (!employment_section) {
 			employment_section = await create_employment(resumeId);
-			resume.fields.push({ typeModel: 'Employment', section_id: employment_section._id });
+			resume.fields.push({
+				typeModel: 'Employment',
+				section_id: employment_section._id,
+			});
 			await resume.save();
 		} else {
 			employment_section.employments.push(defaultEmployment);
@@ -55,11 +58,9 @@ const add_employmentRecord = async (req, res) => {
 		return res.status(200).json({ employment_section });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in adding employment record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in adding employment record',
+		});
 	}
 };
 
@@ -121,11 +122,9 @@ const update_employmentRecord = async (req, res) => {
 			.status(200)
 			.json({ employment_section: updatedEmploymentRecord });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating employment record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating employment record',
+		});
 	}
 };
 
@@ -146,11 +145,9 @@ const delete_employmentRecord = async (req, res) => {
 		return res.status(200).json({ employment_section: existingRecord });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in deleting employment record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in deleting employment record',
+		});
 	}
 };
 
@@ -168,10 +165,12 @@ const delete_employment = async (req, res) => {
 
 		await Employment.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Employment' && field.section_id.toString() === existingRecord._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'Employment' &&
+				field.section_id.toString() === existingRecord._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();
@@ -182,11 +181,9 @@ const delete_employment = async (req, res) => {
 			.json({ message: 'deleted employment successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in deleting employment record',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in deleting employment record',
+		});
 	}
 };
 

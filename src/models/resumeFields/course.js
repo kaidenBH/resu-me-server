@@ -7,15 +7,15 @@ const courseSchema = mongoose.Schema({
 		required: true,
 	},
 	field_name: { type: String, default: 'Course' },
-	courses:[
+	courses: [
 		{
 			course_name: { type: String, default: '' },
 			institution: { type: String, default: '' },
 			start_date: { type: String, default: '' },
 			end_date: { type: String, default: '' },
 			description: { type: String, default: '' },
-		}
-	]
+		},
+	],
 });
 
 module.exports = mongoose.model('Course', courseSchema);

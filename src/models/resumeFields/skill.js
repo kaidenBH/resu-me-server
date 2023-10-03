@@ -11,8 +11,8 @@ const skillSchema = mongoose.Schema({
 		{
 			skill_name: { type: String, default: '' },
 			level: { type: Number, default: 5 },
-		}
-	]
+		},
+	],
 });
 
 module.exports = mongoose.model('Skill', skillSchema);

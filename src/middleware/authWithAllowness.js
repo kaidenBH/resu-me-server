@@ -33,17 +33,24 @@ const authWithAllowness = async (req, res, next) => {
 							.status(401)
 							.json({ message: 'User not found.' });
 					}
-					
-					const existingResume = await Resume.findOne({ _id: resumeId });
+
+					const existingResume = await Resume.findOne({
+						_id: resumeId,
+					});
 					if (!existingResume) {
-						return res.status(401).json({ message: 'resume do not exists' });
+						return res
+							.status(401)
+							.json({ message: 'resume do not exists' });
 					}
 
-					if (user._id.toString() !== existingResume.ownerId.toString()) {
+					if (
+						user._id.toString() !==
+						existingResume.ownerId.toString()
+					) {
 						req.owner = false;
 						next();
 					}
-					req.owner = true; 
+					req.owner = true;
 					next();
 				} catch (error) {
 					console.log(error);

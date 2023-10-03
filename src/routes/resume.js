@@ -8,6 +8,12 @@ const resumeRoutes = require('./resumeRoutes');
 // resume routes
 router.post('/', auth, resumeController.newResume);
 router.get('/:resumeId', authWithAllowness, resumeController.get_resume);
+router.patch(
+	'/:resumeId',
+	auth,
+	resumeValidation,
+	resumeController.reorderFields,
+);
 
 /*router.post('/duplicate/:id', resumeController.duplicateResume);
 
@@ -15,7 +21,7 @@ router.patch('/updateTile', auth, resumeController.updateResumeTitle);
 
 router.delete('/delete', auth, resumeController.deleteResume);*/
 
-// personal section 
+// personal section
 router.patch(
 	'/updatePersonalSection/:resumeId',
 	auth,
@@ -38,7 +44,5 @@ router.use('/internship', resumeRoutes.internship);
 router.use('/course', resumeRoutes.course);
 
 router.use('/custom', resumeRoutes.custom);
-
-
 
 module.exports = router;

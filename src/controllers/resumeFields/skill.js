@@ -37,7 +37,10 @@ const add_skill = async (req, res) => {
 		let skill_section = await Skill.findOne({ resumeId });
 		if (!skill_section) {
 			skill_section = await create_skills(resumeId);
-			resume.fields.push({ typeModel: 'Skill', section_id: skill_section._id });
+			resume.fields.push({
+				typeModel: 'Skill',
+				section_id: skill_section._id,
+			});
 			await resume.save();
 		} else {
 			skill_section.skills.push(defaultSkills);
@@ -55,11 +58,7 @@ const add_skill = async (req, res) => {
 const update_skill = async (req, res) => {
 	try {
 		const { resumeId, skillId } = req.params;
-		const {
-			field_name,
-			skill_name,
-			level,
-		} = req.body;
+		const { field_name, skill_name, level } = req.body;
 
 		let skill_section = await Skill.findOne({ resumeId });
 		if (!skill_section) {
@@ -81,10 +80,8 @@ const update_skill = async (req, res) => {
 
 		const updateFields = {};
 
-		if (skill_name)
-			updateFields['skills.$[elem].skill_name'] = skill_name;
-		if (level)
-			updateFields['skills.$[elem].level'] = level;
+		if (skill_name) updateFields['skills.$[elem].skill_name'] = skill_name;
+		if (level) updateFields['skills.$[elem].level'] = level;
 
 		const updatedskill = await Skill.findOneAndUpdate(
 			{ resumeId },
@@ -94,11 +91,9 @@ const update_skill = async (req, res) => {
 
 		return res.status(200).json({ skill_section: updatedskill });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating skill',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating skill',
+		});
 	}
 };
 
@@ -135,18 +130,18 @@ const delete_skillSection = async (req, res) => {
 
 		await Skill.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Skill' && field.section_id.toString() === existingskills._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'Skill' &&
+				field.section_id.toString() === existingskills._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted skills successfully' });
+		return res.status(200).json({ message: 'deleted skills successfully' });
 	} catch (error) {
 		console.log(error);
 		return res

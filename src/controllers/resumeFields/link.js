@@ -38,7 +38,10 @@ const add_link = async (req, res) => {
 		let link_section = await Link.findOne({ resumeId });
 		if (!link_section) {
 			link_section = await create_links(resumeId);
-			resume.fields.push({ typeModel: 'Link', section_id: link_section._id });
+			resume.fields.push({
+				typeModel: 'Link',
+				section_id: link_section._id,
+			});
 			await resume.save();
 		} else {
 			link_section.links.push(defaultLinks);
@@ -56,11 +59,7 @@ const add_link = async (req, res) => {
 const update_link = async (req, res) => {
 	try {
 		const { resumeId, linkId } = req.params;
-		const {
-			field_name,
-			webite_name,
-			url,
-		} = req.body;
+		const { field_name, webite_name, url } = req.body;
 
 		let link_section = await Link.findOne({ resumeId });
 		if (!link_section) {
@@ -84,8 +83,7 @@ const update_link = async (req, res) => {
 
 		if (webite_name)
 			updateFields['links.$[elem].webite_name'] = webite_name;
-		if (url)
-			updateFields['links.$[elem].url'] = url;
+		if (url) updateFields['links.$[elem].url'] = url;
 
 		const updatedLink = await Link.findOneAndUpdate(
 			{ resumeId },
@@ -95,19 +93,17 @@ const update_link = async (req, res) => {
 
 		return res.status(200).json({ link_section: updatedLink });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({
-				message: 'something went wrong in updating link',
-			});
+		return res.status(500).json({
+			message: 'something went wrong in updating link',
+		});
 	}
 };
 
 const delete_link = async (req, res) => {
 	try {
 		const { resumeId, linkId } = req.params;
-		const resume = req.resume; 
-		
+		const resume = req.resume;
+
 		const existingLinks = await Link.findOne({ resumeId });
 		if (!existingLinks) {
 			return res.status(400).json({ message: 'Links do not exist' });
@@ -137,18 +133,18 @@ const delete_LinkSection = async (req, res) => {
 
 		await Link.deleteOne({ resumeId });
 
-		const fieldIndex = resume.fields.findIndex(field => 
-			field.typeModel === 'Link' && field.section_id.toString() === existingLinks._id.toString()
+		const fieldIndex = resume.fields.findIndex(
+			(field) =>
+				field.typeModel === 'Link' &&
+				field.section_id.toString() === existingLinks._id.toString(),
 		);
-	  
+
 		if (fieldIndex !== -1) {
 			resume.fields.splice(fieldIndex, 1);
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted links successfully' });
+		return res.status(200).json({ message: 'deleted links successfully' });
 	} catch (error) {
 		console.log(error);
 		return res
