@@ -8,11 +8,7 @@ router.post('/refreshToken', auth, userController.refreshToken);
 
 router.patch('/updateuser', auth, userController.updateuser);
 
-router.post(
-	'/sendVerificationEmail',
-	auth,
-	userController.sendVerificationEmail,
-);
+router.post('/sendVerificationEmail', auth, userController.sendVerificationEmail);
 router.get('/verify/:token', userController.verifyEmail);
 
 module.exports = router;

@@ -5,7 +5,9 @@ const resumeValidation = async (req, res, next) => {
 		const { resumeId } = req.params;
 		const user = req.user;
 
-		const existingResume = await Resume.findOne({ _id: resumeId });
+		const existingResume = await Resume.findOne({
+			_id: resumeId,
+		});
 		if (!existingResume) {
 			return res.status(401).json({ message: 'resume do not exists' });
 		}

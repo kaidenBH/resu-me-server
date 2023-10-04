@@ -59,24 +59,17 @@ const add_school = async (req, res) => {
 		return res.status(200).json({ education_section });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in adding a school' });
+		return res.status(500).json({
+			message: 'something went wrong in adding a school',
+		});
 	}
 };
 
 const update_school = async (req, res) => {
 	try {
 		const { resumeId, schoolId } = req.params;
-		const {
-			field_name,
-			school_name,
-			degree_title,
-			start_date,
-			end_date,
-			city,
-			description,
-		} = req.body;
+		const { field_name, school_name, degree_title, start_date, end_date, city, description } =
+			req.body;
 
 		let education_section = await Education.findOne({ resumeId });
 		if (!education_section) {
@@ -102,15 +95,12 @@ const update_school = async (req, res) => {
 
 		const updateFields = {};
 
-		if (school_name)
-			updateFields['schools.$[elem].school_name'] = school_name;
-		if (degree_title)
-			updateFields['schools.$[elem].degree_title'] = degree_title;
+		if (school_name) updateFields['schools.$[elem].school_name'] = school_name;
+		if (degree_title) updateFields['schools.$[elem].degree_title'] = degree_title;
 		if (start_date) updateFields['schools.$[elem].start_date'] = start_date;
 		if (end_date) updateFields['schools.$[elem].end_date'] = end_date;
 		if (city) updateFields['schools.$[elem].city'] = city;
-		if (description)
-			updateFields['schools.$[elem].description'] = description;
+		if (description) updateFields['schools.$[elem].description'] = description;
 
 		const updatedSchool = await Education.findOneAndUpdate(
 			{ resumeId },
@@ -130,7 +120,9 @@ const delete_school = async (req, res) => {
 	try {
 		const { resumeId, schoolId } = req.params;
 
-		const existingEducation = await Education.findOne({ resumeId });
+		const existingEducation = await Education.findOne({
+			resumeId,
+		});
 		if (!existingEducation) {
 			return res.status(400).json({ message: 'Education do not exist' });
 		}
@@ -141,9 +133,9 @@ const delete_school = async (req, res) => {
 		return res.status(200).json({ education_section: existingEducation });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting school' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting school',
+		});
 	}
 };
 
@@ -152,7 +144,9 @@ const delete_Education = async (req, res) => {
 		const { resumeId } = req.params;
 		const resume = req.resume;
 
-		const existingEducation = await Education.findOne({ resumeId });
+		const existingEducation = await Education.findOne({
+			resumeId,
+		});
 		if (!existingEducation) {
 			return res.status(400).json({ message: 'Education do not exist' });
 		}
@@ -162,8 +156,7 @@ const delete_Education = async (req, res) => {
 		const fieldIndex = resume.fields.findIndex(
 			(field) =>
 				field.typeModel === 'Education' &&
-				field.section_id.toString() ===
-					existingEducation._id.toString(),
+				field.section_id.toString() === existingEducation._id.toString(),
 		);
 
 		if (fieldIndex !== -1) {
@@ -171,14 +164,12 @@ const delete_Education = async (req, res) => {
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted education successfully' });
+		return res.status(200).json({ message: 'deleted education successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting education' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting education',
+		});
 	}
 };
 

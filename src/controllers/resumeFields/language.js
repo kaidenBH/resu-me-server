@@ -49,9 +49,9 @@ const add_language = async (req, res) => {
 
 		return res.status(200).json({ language_section });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in adding a Language' });
+		return res.status(500).json({
+			message: 'something went wrong in adding a Language',
+		});
 	}
 };
 
@@ -101,7 +101,9 @@ const delete_language = async (req, res) => {
 	try {
 		const { resumeId, languageId } = req.params;
 
-		const existinglanguages = await Language.findOne({ resumeId });
+		const existinglanguages = await Language.findOne({
+			resumeId,
+		});
 		if (!existinglanguages) {
 			return res.status(400).json({ message: 'languages do not exist' });
 		}
@@ -112,9 +114,9 @@ const delete_language = async (req, res) => {
 		return res.status(200).json({ language_section: existinglanguages });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting Language' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting Language',
+		});
 	}
 };
 
@@ -123,7 +125,9 @@ const delete_languageSection = async (req, res) => {
 		const { resumeId } = req.params;
 		const resume = req.resume;
 
-		const existinglanguages = await Language.findOne({ resumeId });
+		const existinglanguages = await Language.findOne({
+			resumeId,
+		});
 		if (!existinglanguages) {
 			return res.status(400).json({ message: 'languages do not exist' });
 		}
@@ -133,8 +137,7 @@ const delete_languageSection = async (req, res) => {
 		const fieldIndex = resume.fields.findIndex(
 			(field) =>
 				field.typeModel === 'Language' &&
-				field.section_id.toString() ===
-					existinglanguages._id.toString(),
+				field.section_id.toString() === existinglanguages._id.toString(),
 		);
 
 		if (fieldIndex !== -1) {
@@ -142,14 +145,12 @@ const delete_languageSection = async (req, res) => {
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted languages successfully' });
+		return res.status(200).json({ message: 'deleted languages successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting languages' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting languages',
+		});
 	}
 };
 

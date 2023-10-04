@@ -50,9 +50,9 @@ const add_link = async (req, res) => {
 
 		return res.status(200).json({ link_section });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in adding a link' });
+		return res.status(500).json({
+			message: 'something went wrong in adding a link',
+		});
 	}
 };
 
@@ -81,8 +81,7 @@ const update_link = async (req, res) => {
 
 		const updateFields = {};
 
-		if (webite_name)
-			updateFields['links.$[elem].webite_name'] = webite_name;
+		if (webite_name) updateFields['links.$[elem].webite_name'] = webite_name;
 		if (url) updateFields['links.$[elem].url'] = url;
 
 		const updatedLink = await Link.findOneAndUpdate(
@@ -115,9 +114,9 @@ const delete_link = async (req, res) => {
 		return res.status(200).json({ link_section: existingLinks });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting link' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting link',
+		});
 	}
 };
 
@@ -147,9 +146,9 @@ const delete_LinkSection = async (req, res) => {
 		return res.status(200).json({ message: 'deleted links successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting links' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting links',
+		});
 	}
 };
 

@@ -49,9 +49,9 @@ const add_skill = async (req, res) => {
 
 		return res.status(200).json({ skill_section });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in adding a skill' });
+		return res.status(500).json({
+			message: 'something went wrong in adding a skill',
+		});
 	}
 };
 
@@ -112,9 +112,9 @@ const delete_skill = async (req, res) => {
 		return res.status(200).json({ skill_section: existingskills });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting skill' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting skill',
+		});
 	}
 };
 
@@ -144,9 +144,9 @@ const delete_skillSection = async (req, res) => {
 		return res.status(200).json({ message: 'deleted skills successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting skills' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting skills',
+		});
 	}
 };
 

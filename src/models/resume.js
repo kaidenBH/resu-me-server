@@ -11,7 +11,10 @@ const fieldSchema = new mongoose.Schema({
 
 const resumeSchema = mongoose.Schema(
 	{
-		ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+		ownerId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User',
+		},
 		title: { type: String, required: true },
 		template: { type: String, default: 'Simple' },
 		fields: [fieldSchema],

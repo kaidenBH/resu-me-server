@@ -67,10 +67,8 @@ const update_personalSection = async (req, res) => {
 		if (city) updateFields.city = city;
 
 		if (Array.isArray(summary)) {
-			if (summary[0] && summary[0] !== null)
-				updateFields['summary.0'] = summary[0];
-			if (summary[1] && summary[1] !== null)
-				updateFields['summary.1'] = summary[1];
+			if (summary[0] && summary[0] !== null) updateFields['summary.0'] = summary[0];
+			if (summary[1] && summary[1] !== null) updateFields['summary.1'] = summary[1];
 		}
 
 		const updatedPersonSection = await Personal.findByIdAndUpdate(

@@ -12,7 +12,9 @@ const create_employment = async (resumeId) => {
 			city: '',
 			description: '',
 		};
-		let employment_section = await Employment.findOne({ resumeId });
+		let employment_section = await Employment.findOne({
+			resumeId,
+		});
 		if (employment_section) {
 			throw new Error('employment History already exists');
 		}
@@ -42,7 +44,9 @@ const add_employmentRecord = async (req, res) => {
 			description: '',
 		};
 
-		let employment_section = await Employment.findOne({ resumeId });
+		let employment_section = await Employment.findOne({
+			resumeId,
+		});
 		if (!employment_section) {
 			employment_section = await create_employment(resumeId);
 			resume.fields.push({
@@ -67,17 +71,12 @@ const add_employmentRecord = async (req, res) => {
 const update_employmentRecord = async (req, res) => {
 	try {
 		const { resumeId, employmentId } = req.params;
-		const {
-			field_name,
-			job_title,
-			employer_name,
-			start_date,
-			end_date,
-			city,
-			description,
-		} = req.body;
+		const { field_name, job_title, employer_name, start_date, end_date, city, description } =
+			req.body;
 
-		const employment_section = await Employment.findOne({ resumeId });
+		const employment_section = await Employment.findOne({
+			resumeId,
+		});
 		if (!employment_section) {
 			employment_section = await Employment.create({
 				resumeId,
@@ -101,26 +100,23 @@ const update_employmentRecord = async (req, res) => {
 
 		const updateFields = {};
 
-		if (job_title)
-			updateFields['employments.$[elem].job_title'] = job_title;
-		if (employer_name)
-			updateFields['employments.$[elem].employer_name'] = employer_name;
-		if (start_date)
-			updateFields['employments.$[elem].start_date'] = start_date;
+		if (job_title) updateFields['employments.$[elem].job_title'] = job_title;
+		if (employer_name) updateFields['employments.$[elem].employer_name'] = employer_name;
+		if (start_date) updateFields['employments.$[elem].start_date'] = start_date;
 		if (end_date) updateFields['employments.$[elem].end_date'] = end_date;
 		if (city) updateFields['employments.$[elem].city'] = city;
-		if (description)
-			updateFields['employments.$[elem].description'] = description;
+		if (description) updateFields['employments.$[elem].description'] = description;
 
 		const updatedEmploymentRecord = await Employment.findOneAndUpdate(
 			{ resumeId },
 			{ $set: updateFields },
-			{ new: true, arrayFilters: [{ 'elem._id': employmentId }] },
+			{
+				new: true,
+				arrayFilters: [{ 'elem._id': employmentId }],
+			},
 		);
 
-		return res
-			.status(200)
-			.json({ employment_section: updatedEmploymentRecord });
+		return res.status(200).json({ employment_section: updatedEmploymentRecord });
 	} catch (error) {
 		return res.status(500).json({
 			message: 'something went wrong in updating employment record',
@@ -134,9 +130,7 @@ const delete_employmentRecord = async (req, res) => {
 
 		const existingRecord = await Employment.findOne({ resumeId });
 		if (!existingRecord) {
-			return res
-				.status(400)
-				.json({ message: 'Employment record do not exist' });
+			return res.status(400).json({ message: 'Employment record do not exist' });
 		}
 
 		existingRecord.employments.pull({ _id: employmentId });
@@ -158,9 +152,7 @@ const delete_employment = async (req, res) => {
 
 		const existingRecord = await Employment.findOne({ resumeId });
 		if (!existingRecord) {
-			return res
-				.status(400)
-				.json({ message: 'Employment record do not exist' });
+			return res.status(400).json({ message: 'Employment record do not exist' });
 		}
 
 		await Employment.deleteOne({ resumeId });
@@ -176,9 +168,7 @@ const delete_employment = async (req, res) => {
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted employment successfully' });
+		return res.status(200).json({ message: 'deleted employment successfully' });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({

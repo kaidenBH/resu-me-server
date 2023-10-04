@@ -73,14 +73,7 @@ const add_customActivity = async (req, res) => {
 const update_customActivity = async (req, res) => {
 	try {
 		const { resumeId, customId: _id, customActivityId } = req.params;
-		const {
-			field_name,
-			activity_title,
-			start_date,
-			end_date,
-			city,
-			description,
-		} = req.body;
+		const { field_name, activity_title, start_date, end_date, city, description } = req.body;
 		const resume = req.resume;
 
 		let customActivity_section = await Custom.findOne({ _id });
@@ -111,24 +104,22 @@ const update_customActivity = async (req, res) => {
 
 		const updateFields = {};
 
-		if (activity_title)
-			updateFields['activities.$[elem].activity_title'] = activity_title;
-		if (start_date)
-			updateFields['activities.$[elem].start_date'] = start_date;
+		if (activity_title) updateFields['activities.$[elem].activity_title'] = activity_title;
+		if (start_date) updateFields['activities.$[elem].start_date'] = start_date;
 		if (end_date) updateFields['activities.$[elem].end_date'] = end_date;
 		if (city) updateFields['activities.$[elem].city'] = city;
-		if (description)
-			updateFields['activities.$[elem].description'] = description;
+		if (description) updateFields['activities.$[elem].description'] = description;
 
 		const updatedCustomRecord = await Custom.findOneAndUpdate(
 			{ _id },
 			{ $set: updateFields },
-			{ new: true, arrayFilters: [{ 'elem._id': customActivityId }] },
+			{
+				new: true,
+				arrayFilters: [{ 'elem._id': customActivityId }],
+			},
 		);
 
-		return res
-			.status(200)
-			.json({ customActivity_section: updatedCustomRecord });
+		return res.status(200).json({ customActivity_section: updatedCustomRecord });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({
@@ -143,9 +134,7 @@ const delete_customActivity = async (req, res) => {
 
 		const existingRecord = await Custom.findOne({ _id });
 		if (!existingRecord) {
-			return res
-				.status(400)
-				.json({ message: 'Custom record do not exist' });
+			return res.status(400).json({ message: 'Custom record do not exist' });
 		}
 
 		existingRecord.activities.pull({ _id: customActivityId });
@@ -167,9 +156,7 @@ const delete_custom = async (req, res) => {
 
 		const existingRecord = await Custom.findOne({ _id });
 		if (!existingRecord) {
-			return res
-				.status(400)
-				.json({ message: 'Custom record do not exist' });
+			return res.status(400).json({ message: 'Custom record do not exist' });
 		}
 
 		await Custom.deleteOne({ _id });
@@ -184,9 +171,7 @@ const delete_custom = async (req, res) => {
 			await resume.save();
 		}
 
-		return res
-			.status(200)
-			.json({ message: 'deleted customActivity successfully' });
+		return res.status(200).json({ message: 'deleted customActivity successfully' });
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json({

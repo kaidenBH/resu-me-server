@@ -14,18 +14,10 @@ dotenv.config();
 
 const signup = async (req, res) => {
 	try {
-		const {
-			email,
-			password: pass,
-			confirmPassword,
-			first_name,
-			last_name,
-		} = req.body;
+		const { email, password: pass, confirmPassword, first_name, last_name } = req.body;
 
 		if (!email || !pass || !first_name || !last_name) {
-			return res
-				.status(400)
-				.json({ message: 'Fill the required fields.' });
+			return res.status(400).json({ message: 'Fill the required fields.' });
 		}
 
 		if (!validateEmail(email) || !validatePassword(pass)) {
@@ -60,13 +52,10 @@ const signup = async (req, res) => {
 			process.env.SECRET_TOKEN,
 			{ expiresIn: '7d' },
 		);
-		const { _id, verificationToken, password, ...infos } =
-			result.toObject();
+		const { _id, verificationToken, password, ...infos } = result.toObject();
 		return res.status(200).json({ infos, token });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'Something went wrong in server' });
+		return res.status(500).json({ message: 'Something went wrong in server' });
 	}
 };
 
@@ -75,9 +64,7 @@ const signin = async (req, res) => {
 		const { email, password: pass } = req.body;
 
 		if (!email || !pass) {
-			return res
-				.status(400)
-				.json({ message: 'Fill the required fields.' });
+			return res.status(400).json({ message: 'Fill the required fields.' });
 		}
 		const existingUser = await User.findOne({ email });
 
@@ -85,10 +72,7 @@ const signin = async (req, res) => {
 			return res.status(404).json({ message: 'User does not exists.' });
 		}
 
-		const isPassowrdCorrect = await bcrypt.compare(
-			pass,
-			existingUser.password,
-		);
+		const isPassowrdCorrect = await bcrypt.compare(pass, existingUser.password);
 
 		if (!isPassowrdCorrect) {
 			return res.status(401).json({ message: 'Password Incorerct.' });
@@ -103,14 +87,11 @@ const signin = async (req, res) => {
 			process.env.SECRET_TOKEN,
 			{ expiresIn: '7d' },
 		);
-		const { _id, verificationToken, password, ...infos } =
-			existingUser.toObject();
+		const { _id, verificationToken, password, ...infos } = existingUser.toObject();
 
 		return res.status(200).json({ infos, token });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'Something went wrong in server' });
+		return res.status(500).json({ message: 'Something went wrong in server' });
 	}
 };
 
@@ -132,10 +113,7 @@ const updateuser = async (req, res) => {
 			return res.status(400).json({ message: 'invalid credentials.' });
 		}
 
-		const isPassowrdCorrect = await bcrypt.compare(
-			oldPassword,
-			user.password,
-		);
+		const isPassowrdCorrect = await bcrypt.compare(oldPassword, user.password);
 
 		if (!isPassowrdCorrect) {
 			return res.status(400).json({ message: 'Invalid credentials.' });
@@ -150,23 +128,17 @@ const updateuser = async (req, res) => {
 			const existEmail = await User.findOne({ email });
 			const oldEmail = user.email;
 			if (existEmail && email !== oldEmail) {
-				return res
-					.status(406)
-					.json({ message: 'Email already exists.' });
+				return res.status(406).json({ message: 'Email already exists.' });
 			}
 			updateFields.email = email;
 		}
 
 		if (newPassword) {
 			if (!validatePassword(newPassword)) {
-				return res
-					.status(400)
-					.json({ message: 'invalid new Password.' });
+				return res.status(400).json({ message: 'invalid new Password.' });
 			}
 			if (!confirmsNewPassword || newPassword !== confirmsNewPassword) {
-				return res
-					.status(400)
-					.json({ message: 'Invalid credentials.' });
+				return res.status(400).json({ message: 'Invalid credentials.' });
 			}
 			updateFields.password = await bcrypt.hash(newPassword, 12);
 		}
@@ -179,8 +151,7 @@ const updateuser = async (req, res) => {
 			new: true,
 		});
 
-		const { _id, verificationToken, password, ...infos } =
-			updatedUser.toObject();
+		const { _id, verificationToken, password, ...infos } = updatedUser.toObject();
 		const token = jwt.sign(
 			{
 				email: updatedUser.email,
@@ -193,9 +164,7 @@ const updateuser = async (req, res) => {
 
 		return res.status(200).json({ infos, token });
 	} catch (error) {
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in server' });
+		return res.status(500).json({ message: 'something went wrong in server' });
 	}
 };
 
@@ -214,7 +183,6 @@ const refreshToken = async (req, res) => {
 		);
 		const { _id, verificationToken, password, ...infos } = user.toObject();
 		return res.status(200).json({ infos, token });
-
 	} catch (error) {
 		return res.status(403).json({ message: 'Invalid refresh token.' });
 	}
@@ -238,7 +206,9 @@ const sendVerificationEmail = async (req, res) => {
 		};
 
 		await transporter.sendMail(mailDetails);
-		return res.json({ message: 'Email verification sent successfully' });
+		return res.json({
+			message: 'Email verification sent successfully',
+		});
 	} catch (error) {
 		return res.status(500).json({ error: 'Internal server error' });
 	}

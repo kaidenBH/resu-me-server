@@ -57,23 +57,17 @@ const add_course = async (req, res) => {
 		return res.status(200).json({ course_section });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in adding a course' });
+		return res.status(500).json({
+			message: 'something went wrong in adding a course',
+		});
 	}
 };
 
 const update_course = async (req, res) => {
 	try {
 		const { resumeId, courseId } = req.params;
-		const {
-			field_name,
-			course_name,
-			institution,
-			start_date,
-			end_date,
-			description,
-		} = req.body;
+		const { field_name, course_name, institution, start_date, end_date, description } =
+			req.body;
 
 		let course_section = await Course.findOne({ resumeId });
 		if (!course_section) {
@@ -98,14 +92,11 @@ const update_course = async (req, res) => {
 
 		const updateFields = {};
 
-		if (course_name)
-			updateFields['courses.$[elem].course_name'] = course_name;
-		if (institution)
-			updateFields['courses.$[elem].institution'] = institution;
+		if (course_name) updateFields['courses.$[elem].course_name'] = course_name;
+		if (institution) updateFields['courses.$[elem].institution'] = institution;
 		if (start_date) updateFields['courses.$[elem].start_date'] = start_date;
 		if (end_date) updateFields['courses.$[elem].end_date'] = end_date;
-		if (description)
-			updateFields['courses.$[elem].description'] = description;
+		if (description) updateFields['courses.$[elem].description'] = description;
 
 		const updatedCourse = await Course.findOneAndUpdate(
 			{ resumeId },
@@ -136,9 +127,9 @@ const delete_course = async (req, res) => {
 		return res.status(200).json({ course_section: existingCourse });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting course' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting course',
+		});
 	}
 };
 
@@ -168,9 +159,9 @@ const delete_CourseSection = async (req, res) => {
 		return res.status(200).json({ message: 'deleted course successfully' });
 	} catch (error) {
 		console.log(error);
-		return res
-			.status(500)
-			.json({ message: 'something went wrong in deleting course' });
+		return res.status(500).json({
+			message: 'something went wrong in deleting course',
+		});
 	}
 };
 
