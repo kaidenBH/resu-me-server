@@ -15,7 +15,7 @@ dotenv.config();
 const signup = async (req, res) => {
 	try {
 		const { email, password: pass, confirmPassword, first_name, last_name } = req.body;
-
+		
 		if (!email || !pass || !first_name || !last_name) {
 			return res.status(400).json({ message: 'Fill the required fields.' });
 		}
@@ -53,7 +53,7 @@ const signup = async (req, res) => {
 			{ expiresIn: '7d' },
 		);
 		const { _id, verificationToken, password, ...infos } = result.toObject();
-		return res.status(200).json({ infos, token });
+		return res.status(200).json({ ...infos, token });
 	} catch (error) {
 		return res.status(500).json({ message: 'Something went wrong in server' });
 	}
@@ -89,7 +89,7 @@ const signin = async (req, res) => {
 		);
 		const { _id, verificationToken, password, ...infos } = existingUser.toObject();
 
-		return res.status(200).json({ infos, token });
+		return res.status(200).json({ ...infos, token });
 	} catch (error) {
 		return res.status(500).json({ message: 'Something went wrong in server' });
 	}
@@ -162,7 +162,7 @@ const updateuser = async (req, res) => {
 			{ expiresIn: '7d' },
 		);
 
-		return res.status(200).json({ infos, token });
+		return res.status(200).json({ ...infos, token });
 	} catch (error) {
 		return res.status(500).json({ message: 'something went wrong in server' });
 	}
@@ -182,7 +182,7 @@ const refreshToken = async (req, res) => {
 			{ expiresIn: '7d' },
 		);
 		const { _id, verificationToken, password, ...infos } = user.toObject();
-		return res.status(200).json({ infos, token });
+		return res.status(200).json({ ...infos, token });
 	} catch (error) {
 		return res.status(403).json({ message: 'Invalid refresh token.' });
 	}
