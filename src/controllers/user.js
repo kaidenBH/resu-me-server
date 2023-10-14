@@ -95,6 +95,31 @@ const signin = async (req, res) => {
 	}
 };
 
+const updateuserImage = async (req, res) => {
+	try {
+		const user = req.user;
+
+		const { image } = req.body;
+
+		if (image) user.image = image;
+		await user.save();
+
+		const { _id, verificationToken, password, ...infos } = user.toObject();
+		const token = jwt.sign(
+			{
+				email: user.email,
+				id: user._id,
+				account_type: user.account_type,
+			},
+			process.env.SECRET_TOKEN,
+			{ expiresIn: '7d' },
+		);
+
+		return res.status(200).json({ ...infos, token });
+	} catch (error) {
+		return res.status(500).json({ message: 'something went wrong in server' });
+	}
+};
 const updateuser = async (req, res) => {
 	try {
 		const user = req.user;
@@ -240,4 +265,5 @@ module.exports = {
 	refreshToken,
 	sendVerificationEmail,
 	verifyEmail,
+	updateuserImage,
 };
