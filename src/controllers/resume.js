@@ -65,6 +65,19 @@ const newResume = async (req, res) => {
 	}
 };
 
+const get_all_resumes = async (req, res) => {
+	try {
+		const user = req.user;
+		let resumes = await Resume.find({ ownerId: user._id});
+		return res.status(200).json({ resumes });
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			message: 'something went wrong in retrieving all resumes',
+		});
+	}
+};
+
 const get_resume = async (req, res) => {
 	try {
 		const { resumeId } = req.params;
@@ -86,11 +99,9 @@ const get_resume = async (req, res) => {
 		const { ownerId, ...existingResume } = resume.toObject();
 
 		return res.status(200).json({
-			resume: {
-				owner,
-				...existingResume,
-				fields: populatedFields,
-			},
+			owner,
+			...existingResume,
+			fields: populatedFields,
 		});
 	} catch (error) {
 		console.log(error);
@@ -233,6 +244,7 @@ module.exports = {
 	duplicateResume,
 	resumeFields,
 	get_resume,
+	get_all_resumes,
 	updateResume,
 	removeResume,
 	reorderFields,
