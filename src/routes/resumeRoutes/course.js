@@ -15,7 +15,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.course.update_course,
 );
-router.delete(
+router.patch(
 	'/deleteCourse/:resumeId/:courseId',
 	auth,
 	resumeValidation,

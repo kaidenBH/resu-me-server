@@ -15,7 +15,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.internship.update_internshipRecord,
 );
-router.delete(
+router.patch(
 	'/deleteInternShipRecord/:resumeId/:internshipId',
 	auth,
 	resumeValidation,

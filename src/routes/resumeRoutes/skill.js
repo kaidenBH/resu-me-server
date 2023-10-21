@@ -15,7 +15,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.skills.update_skill,
 );
-router.delete(
+router.patch(
 	'/deleteSkill/:resumeId/:skillId',
 	auth,
 	resumeValidation,

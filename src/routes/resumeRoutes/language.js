@@ -15,7 +15,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.languages.update_language,
 );
-router.delete(
+router.patch(
 	'/deleteLanguage/:resumeId/:languageId',
 	auth,
 	resumeValidation,
