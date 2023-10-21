@@ -21,7 +21,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.links.delete_link,
 );
-router.delete(
+router.patch(
 	'/deleteLinkSection/:resumeId',
 	auth,
 	resumeValidation,

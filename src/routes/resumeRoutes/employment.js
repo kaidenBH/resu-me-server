@@ -21,7 +21,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.employment.delete_employmentRecord,
 );
-router.delete(
+router.patch(
 	'/deleteEmployment/:resumeId',
 	auth,
 	resumeValidation,

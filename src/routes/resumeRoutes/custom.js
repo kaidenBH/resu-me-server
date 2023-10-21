@@ -27,7 +27,7 @@ router.patch(
 	resumeValidation,
 	resumeController.resumeFields.custom.delete_customActivity,
 );
-router.delete(
+router.patch(
 	'/deleteCustom/:resumeId/:customId',
 	auth,
 	resumeValidation,
