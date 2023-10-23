@@ -6,7 +6,7 @@ const create_skills = async (resumeId) => {
 	try {
 		const defaultSkills = {
 			skill_name: '',
-			level: 5,
+			level: 3,
 		};
 
 		let skill_section = await Skill.findOne({ resumeId });

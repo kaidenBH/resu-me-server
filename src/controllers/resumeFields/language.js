@@ -6,7 +6,7 @@ const create_languages = async (resumeId) => {
 	try {
 		const defaultlanguages = {
 			language: '',
-			level: 5,
+			level: 3,
 		};
 
 		let language_section = await Language.findOne({ resumeId });
@@ -31,7 +31,7 @@ const add_language = async (req, res) => {
 		const resume = req.resume;
 		const defaultlanguages = {
 			language: '',
-			level: 5,
+			level: 3,
 		};
 
 		let language_section = await Language.findOne({ resumeId });
