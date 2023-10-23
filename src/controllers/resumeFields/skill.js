@@ -31,7 +31,7 @@ const add_skill = async (req, res) => {
 		const resume = req.resume;
 		const defaultSkills = {
 			skill_name: '',
-			level: 5,
+			level: 3,
 		};
 
 		let skill_section = await Skill.findOne({ resumeId });
