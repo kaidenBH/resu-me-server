@@ -6,7 +6,7 @@ const courseSchema = mongoose.Schema({
 		ref: 'Resume',
 		required: true,
 	},
-	field_name: { type: String, default: 'Course' },
+	field_name: { type: String, default: 'Courses' },
 	courses: [
 		{
 			course_name: { type: String, default: '' },

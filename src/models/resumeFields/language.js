@@ -10,7 +10,7 @@ const languageSchema = mongoose.Schema({
 	languages: [
 		{
 			language: { type: String, default: '' },
-			level: { type: Number, default: 5 },
+			level: { type: Number, default: 3 },
 		},
 	],
 });

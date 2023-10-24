@@ -73,7 +73,7 @@ const update_course = async (req, res) => {
 		if (!course_section) {
 			course_section = await Course.create({
 				resumeId,
-				field_name: field_name || 'Course',
+				field_name: field_name || 'Courses',
 				courses: [
 					{
 						course_name: course_name || '',
