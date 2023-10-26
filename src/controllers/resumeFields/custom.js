@@ -151,7 +151,7 @@ const delete_customActivity = async (req, res) => {
 
 const delete_custom = async (req, res) => {
 	try {
-		const { resumeId, customId: _id } = req.params;
+		const { customId: _id } = req.params;
 		const resume = req.resume;
 
 		const existingRecord = await Custom.findOne({ _id });

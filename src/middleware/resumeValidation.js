@@ -4,7 +4,6 @@ const resumeValidation = async (req, res, next) => {
 	try {
 		const { resumeId } = req.params;
 		const user = req.user;
-
 		const existingResume = await Resume.findOne({
 			_id: resumeId,
 		});
@@ -14,7 +13,7 @@ const resumeValidation = async (req, res, next) => {
 		if (user._id.toString() !== existingResume.ownerId.toString()) {
 			return res.status(401).json({ message: 'Invalid request' });
 		}
-
+		
 		req.resume = existingResume;
 		next();
 	} catch (error) {

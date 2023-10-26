@@ -207,29 +207,15 @@ const duplicateResume = async (req, res) => {
 
 const reorderFields = async (req, res) => {
 	try {
-		/*
-		{
-			"newOrder": ["616bc9e7e7f2b53c5c7e14e1", "616bc9e7e7f2b53c5c7e14e2", "616bc9e7e7f2b53c5c7e14e3"]
-		}*/
-		const { newOrder } = req.body;
+		const { originalIndex, targetIndex } = req.body;
+        const resume = req.resume;
+		
+        const updatedFields = [...resume.fields];
+        const [movedField] = updatedFields.splice(originalIndex, 1);
+        updatedFields.splice(targetIndex, 0, movedField);
 
-		const resume = req.resume;
-
-		const fieldPositions = new Map();
-		resume.fields.forEach((field, index) => {
-			fieldPositions.set(field.section_id.toString(), index);
-		});
-
-		const updatedFields = [];
-		newOrder.forEach((sectionId) => {
-			const position = fieldPositions.get(sectionId);
-			if (position !== undefined) {
-				updatedFields.push(resume.fields[position]);
-			}
-		});
-
-		resume.fields = updatedFields;
-		await resume.save();
+        resume.fields = updatedFields;
+        await resume.save();
 
 		return res.status(200).json({ message: 'Fields reordered successfully' });
 	} catch (error) {
