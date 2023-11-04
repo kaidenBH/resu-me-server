@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema(
 		image: { type: String, required: false, default: null },
 		isVerified: { type: Boolean, default: false },
 		verificationToken: { type: String },
-		account_type: { type: String, default: 'Basic' },
+		account_type: { type: String, default: 'Pro' },
 		resumes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Resume' }],
 	},
 	{
