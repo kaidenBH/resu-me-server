@@ -17,21 +17,21 @@ const signup = async (req, res) => {
 		const { email, password: pass, confirmPassword, first_name, last_name } = req.body;
 		
 		if (!email || !pass || !first_name || !last_name) {
-			return res.status(400).json({ message: 'Fill the required fields.' });
+			return res.status(400).json({ message: 'Fill the required fields' });
 		}
 
 		if (!validateEmail(email) || !validatePassword(pass)) {
-			return res.status(400).json({ message: 'invalid credentials.' });
+			return res.status(400).json({ message: 'invalid Password or Email' });
 		}
 
 		const existingUser = await User.findOne({ email });
 
 		if (existingUser) {
-			return res.status(406).json({ message: 'User already exists.' });
+			return res.status(406).json({ message: 'User already exists' });
 		}
 
 		if (pass !== confirmPassword) {
-			return res.status(401).json({ message: 'Passowrds Incorerct. ' });
+			return res.status(401).json({ message: 'Passowrd confirmation Incorerct' });
 		}
 
 		const hashPassowrd = await bcrypt.hash(pass, 12);
@@ -64,18 +64,18 @@ const signin = async (req, res) => {
 		const { email, password: pass } = req.body;
 
 		if (!email || !pass) {
-			return res.status(400).json({ message: 'Fill the required fields.' });
+			return res.status(400).json({ message: 'Fill the required fields' });
 		}
 		const existingUser = await User.findOne({ email });
 
 		if (!existingUser) {
-			return res.status(404).json({ message: 'User does not exists.' });
+			return res.status(404).json({ message: 'User does not exist' });
 		}
 
 		const isPassowrdCorrect = await bcrypt.compare(pass, existingUser.password);
 
 		if (!isPassowrdCorrect) {
-			return res.status(401).json({ message: 'Password Incorerct.' });
+			return res.status(401).json({ message: 'Password Incorerct' });
 		}
 
 		const token = jwt.sign(
@@ -135,35 +135,35 @@ const updateuser = async (req, res) => {
 		} = req.body;
 
 		if (!oldPassword) {
-			return res.status(400).json({ message: 'invalid credentials.' });
+			return res.status(400).json({ message: 'Fill password field' });
 		}
 
 		const isPassowrdCorrect = await bcrypt.compare(oldPassword, user.password);
 
 		if (!isPassowrdCorrect) {
-			return res.status(400).json({ message: 'Invalid credentials.' });
+			return res.status(400).json({ message: 'Incorerct passowrd' });
 		}
 
 		const updateFields = {};
 
 		if (email) {
 			if (!validateEmail(email)) {
-				return res.status(400).json({ message: 'invalid new email.' });
+				return res.status(400).json({ message: 'invalid new email' });
 			}
 			const existEmail = await User.findOne({ email });
 			const oldEmail = user.email;
 			if (existEmail && email !== oldEmail) {
-				return res.status(406).json({ message: 'Email already exists.' });
+				return res.status(406).json({ message: 'Email already exists' });
 			}
 			updateFields.email = email;
 		}
 
 		if (newPassword) {
 			if (!validatePassword(newPassword)) {
-				return res.status(400).json({ message: 'invalid new Password.' });
+				return res.status(400).json({ message: 'invalid new Password' });
 			}
-			if (!confirmsNewPassword || newPassword !== confirmsNewPassword) {
-				return res.status(400).json({ message: 'Invalid credentials.' });
+			if (!confirmsNewPassword && newPassword !== confirmsNewPassword) {
+				return res.status(400).json({ message: 'new confirmation passowrd Incorerct' });
 			}
 			updateFields.password = await bcrypt.hash(newPassword, 12);
 		}
