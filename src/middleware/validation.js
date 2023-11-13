@@ -7,8 +7,8 @@ const validateEmail = (email) => {
 };
 
 const validatePassword = (password) => {
-	// Password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit.
-	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+	// Password should be at least 6 characters long and contain at least one uppercase letter, one lowercase letter.
+	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
 	return passwordRegex.test(password);
 };
 
